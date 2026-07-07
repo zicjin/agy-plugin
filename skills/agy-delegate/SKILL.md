@@ -27,6 +27,10 @@ Do this:
    `agy-delegate --tier <tier> [--dir .] [--yolo] [--digest] "<task>"`
    For read/analysis tasks, add `--digest` — it appends a digest-only output
    contract so agy returns compact bullets instead of raw content.
+   Compose the task text per the `agy-prompting` skill: operator-style,
+   XML-block prompt with an explicit output contract and follow-through defaults.
+   For a follow-up on the same thread, use `--continue` and send only the delta
+   instruction — don't restate the whole prompt.
 3. Ingest only the **result/digest** — do NOT re-read the files agy already handled
    (keeps your context lean; that's where the cost savings come from). If the
    wrapper prints a *"looks like a raw dump"* note on stderr, do NOT ingest the raw
@@ -35,7 +39,10 @@ Do this:
    missing (plus `2` failed / `3` empty), with an `AGY_SIGNAL {...}` line on
    stderr — react to the code instead of scraping prose.
 5. **Verify**: actually run/check the output; never trust a self-reported "done".
-   Report what you delegated and how you verified it.
+   Report what you delegated and how you verified it. If the agy run failed or
+   returned nothing, report the failure (with the most actionable stderr lines) —
+   don't silently substitute your own answer for the delegated one; tell the user
+   before doing the work yourself.
 
 Remember the break-even: only delegate if the offloaded volume clearly exceeds the
 spec + round-trip + verification overhead. Tiny tasks are cheaper to just do

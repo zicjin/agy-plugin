@@ -80,6 +80,9 @@ Then verify: `agy-doctor` (or `/agy-setup` inside Codex).
 | `$agy-review` | `/agy-review [--adversarial]` | independent cross-model review of the current diff; Codex reconciles |
 | `$agy-research` | `/agy-research <topic>` | Codex-orchestrated deep research — agy does grounded web legwork, Codex verifies citations across ≥2 sources |
 | `$agy-jobs` | `/agy-status [id]` · `/agy-result <id>` · `/agy-cancel <id>` | manage background delegation jobs |
+| `$agy-prompting` | — | internal: how to compose operator-style prompt contracts for agy (XML blocks, output contracts, `--continue` delta follow-ups) |
+
+Reviews are **review-only**: findings are reported and never auto-fixed — Codex asks which findings you want addressed. Adversarial reviews use a ready-made prompt contract (`docs/adversarial-review-prompt.md`, adapted from OpenAI's [codex-plugin-cc](https://github.com/openai/codex-plugin-cc)) that pressure-tests design choices, failure modes, and assumptions, and returns a `VERDICT:` line with severity-ordered, confidence-scored findings.
 
 > Background jobs are for **interactive** sessions (fire-and-collect). In headless `codex exec` (one-shot), delegate **synchronously** — there's no later turn to collect a result.
 
@@ -136,6 +139,7 @@ prompts/                         legacy custom prompts (installed to ~/.codex/pr
 scripts/                         agy-delegate.sh · agy-job.sh · doctor.sh
 bin/                             bare-name entrypoints (agy-delegate, agy-job, agy-doctor) — install.sh puts this on PATH
 docs/AGENTS-snippet.md           the routing policy + verification gates (hook context / AGENTS.md paste)
+docs/adversarial-review-prompt.md  XML prompt contract for adversarial reviews (prepend to a diff)
 install.sh                       manual install: wires prompts + PATH (idempotent; --uninstall reverses)
 tests/                           dependency-free tests (stub agy); bash tests/run-tests.sh
 ```
