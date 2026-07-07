@@ -4,18 +4,18 @@
 
 **Run the Antigravity CLI (Gemini) as a collaborating sub-agent, right inside OpenAI Codex or Claude Code.**
 
-Your agent conducts the judgement; Gemini does the heavy lifting — intelligent model routing across the SDLC.
+Your agent conducts the judgement; Antigravity does the heavy lifting — intelligent model routing across the SDLC.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Antigravity CLI](https://img.shields.io/badge/Antigravity%20CLI-agy-4285F4?logo=googlegemini&logoColor=white)](https://antigravity.google/docs/cli-using)
 
 </div>
 
-Grown out of [antigravity-for-claude-code](https://github.com/yuting0624/antigravity-for-claude-code): the same robust `agy` delegation wrapper, background jobs, and routing/cost discipline — packaged as a dual-platform plugin: an official [Codex plugin](https://developers.openai.com/codex/plugins) **and** a [Claude Code plugin](https://code.claude.com/docs/en/plugins) from the same repo (shared skills, scripts, and a SessionStart policy hook per platform).
+Grown out of [antigravity-for-claude-code](https://github.com/yuting0624/antigravity-for-claude-code): the robust `agy` delegation wrapper, background jobs, and routing/cost discipline — packaged as a dual-platform plugin: an official [Codex plugin](https://developers.openai.com/codex/plugins) **and** a [Claude Code plugin](https://code.claude.com/docs/en/plugins) from the same repo (shared skills, scripts, and a SessionStart policy hook per platform).
 
 ## 💡 Why
 
-| | Codex / Claude (conductor) | Gemini / `agy` (executor) |
+| | Codex / Claude (conductor) | `agy` (executor) |
 |---|---|---|
 | **Owns** | requirements · architecture · the hard 20% · **verification** · review | scaffold · implementation · test generation · search |
 | **Strength** | judgement | cheap, fast throughput |
@@ -60,7 +60,7 @@ Both give you:
 
 The skills call the bundled `scripts/*.sh` by path — no PATH setup needed. Verify with the `agy-setup` skill (or run the plugin's `scripts/doctor.sh` directly).
 
-**Prerequisites:** the [Antigravity CLI](https://antigravity.google/docs/cli-using) (`agy`) installed & authenticated (`agy models` lists Gemini models), and [Codex CLI](https://github.com/openai/codex) or [Claude Code](https://code.claude.com/docs).
+**Prerequisites:** the [Antigravity CLI](https://antigravity.google/docs/cli-using) (`agy`) installed & authenticated (`agy models` lists models), and [Codex CLI](https://github.com/openai/codex) or [Claude Code](https://code.claude.com/docs).
 
 **Platform support:** macOS, Linux, and WSL. Native Windows (Git Bash/MSYS) is not recommended — headless `agy -p` can hang without a real console (ConPTY); the wrapper bounds this with a wall-clock guard (GNU `timeout`/`gtimeout`) and the doctor script distinguishes a hang from an auth failure.
 
@@ -157,7 +157,3 @@ The core is platform-neutral — pure-bash scripts, open-format `SKILL.md` skill
 | scripts | `scripts/` (shared, invoked by path) | `scripts/` (shared, invoked by path) |
 
 Configuration is plain env vars (`AGY_*`) on both platforms.
-
-## ⚠️ Disclaimer
-
-Community project. **Not affiliated with, endorsed by, or supported by Google, OpenAI, or Anthropic.** "Antigravity", "Gemini", and "Codex" are trademarks of their respective owners. This project orchestrates the third-party `agy` CLI; you are responsible for your own API/cloud costs, credentials, and data-sharing choices. MIT licensed — see [LICENSE](LICENSE). Derived from [antigravity-for-claude-code](https://github.com/yuting0624/antigravity-for-claude-code) (MIT).
