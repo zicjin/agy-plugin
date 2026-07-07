@@ -21,14 +21,14 @@ to the cheaper, faster executor.
 ### How to call it
 
 ```bash
-agy-delegate [--tier flash|flash-lo|pro] [--dir <path>] [--timeout 10m] \
+agy-delegate [--tier low|medium|high] [--dir <path>] [--timeout 10m] \
              [--yolo] [--sandbox] [--digest] "the task prompt"
 echo "long prompt" | agy-delegate -        # prompt from stdin
-ID=$(agy-job start --tier pro --dir . "big task"); agy-job result "$ID"   # background
+ID=$(agy-job start --tier high --dir . "big task"); agy-job result "$ID"   # background
 ```
 
-- Tiers: `flash` (default, bulk) · `flash-lo` (cheapest, trivial) · `pro` (harder
-  reasoning / reviews / cross-checks). Remap via env `AGY_CODEX_TIER_*`,
+- Tiers are Gemini Flash thinking levels: `medium` (default, bulk) · `low` (cheapest,
+  trivial) · `high` (harder reasoning / reviews / cross-checks). Remap via env `AGY_CODEX_TIER_*`,
   `AGY_CODEX_DEFAULT_MODEL`, or pass `--model "<exact name from agy models>"` — keep
   the executor a *different, cheaper* model than you.
 - **Always pass `--dir <repo-root>` for repo work** so agy loads AGENTS.md and the real
@@ -66,12 +66,12 @@ You own correctness. For anything that ships:
 4. Review every shipping line — hallucinated deps, error handling, edge cases.
 5. **Never trust agy's "GREEN"** — it may alter the environment to make a check pass;
    re-run gates yourself in a clean state.
-If wrong: retry on `--tier pro`, sharpen the spec, or do that piece yourself.
+If wrong: retry on `--tier high`, sharpen the spec, or do that piece yourself.
 
 ### When to reach for it
 
 Proactively consider delegation when a request looks like bulk work above the
 break-even: mass edits/migrations, exhaustive test generation, fan-out web research,
 long-context reads that reduce to a short digest, or an independent cross-model review
-(`git diff | agy-delegate --tier pro -`). It's advisory — the break-even judgment is
+(`git diff | agy-delegate --tier high -`). It's advisory — the break-even judgment is
 yours per task.

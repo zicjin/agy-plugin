@@ -31,7 +31,7 @@ you → Codex (conduct: design / verify / review)
 
 - **Routes work across the SDLC** — Codex keeps the judgement calls; Antigravity handles scaffolding, test generation, first-pass review, and migrations under a shared `AGENTS.md`.
 - **Adds tools Codex may lack** — live Google/web search, Vertex AI Search over your internal data, deep research. Codex reviews and re-checks the results.
-- **Cross-model verification** — an independent, different-model opinion on your code (`git diff | agy-delegate --tier pro -`).
+- **Cross-model verification** — an independent, different-model opinion on your code (`git diff | agy-delegate --tier high -`).
 - **Background jobs** — fire a long delegation with `agy-job`, keep working, collect later.
 - **Built-in cost discipline** — `--digest` output contracts, dump-size warnings, break-even guidance baked into the skills and the policy snippet.
 - **Policy injected automatically** — the plugin's SessionStart hook injects `docs/AGENTS-snippet.md` (routing policy + verification gates) into every session; no per-repo `AGENTS.md` editing. Since `agy` reads `AGENTS.md` natively, you can additionally paste the snippet into a repo to share the same harness with agy itself.
@@ -74,29 +74,29 @@ Reviews are **review-only**: findings are reported and never auto-fixed — Code
 
 ```bash
 # one-shot delegation (plain text on stdout)
-agy-delegate --tier flash "Summarize this changelog in 3 bullets: ..."
+agy-delegate "Summarize this changelog in 3 bullets: ..."
 
 # give Antigravity a workspace for multi-file agentic work
-agy-delegate --tier pro --dir ./src "List every TODO with file:line"
+agy-delegate --tier high --dir ./src "List every TODO with file:line"
 
 # bulk read -> digest-only reply (the biggest cost lever; wrapper warns on dump-sized replies)
 agy-delegate --digest --dir . "Map the auth flow end to end"
 
 # live web / Google search (tools need --yolo in headless mode)
-agy-delegate --tier pro --yolo "Web-search <X>. Give URLs + dates."
+agy-delegate --yolo "Web-search <X>. Give URLs + dates."
 
 # cross-model review / stdin / background job
-git diff | agy-delegate --tier pro -
-ID=$(agy-job start --tier pro --dir . "big task"); agy-job result "$ID"
+git diff | agy-delegate --tier high -
+ID=$(agy-job start --tier high --dir . "big task"); agy-job result "$ID"
 ```
 
 | tier | model | use for |
 |------|-------|---------|
-| `flash` (default) | Gemini 3.5 Flash (High) | most bulk work |
-| `flash-lo` | Gemini 3.5 Flash (Low) | cheapest, trivial tasks |
-| `pro` | Gemini 3.1 Pro (High) | harder reasoning / cross-checks |
+| `low` | Gemini 3.5 Flash (Low) | cheapest, trivial tasks |
+| `medium` (default) | Gemini 3.5 Flash (Medium) | most bulk work |
+| `high` | Gemini 3.5 Flash (High) | harder reasoning / reviews / cross-checks |
 
-**agy is multi-model.** Tiers default to Gemini, but you can use any model `agy models` lists: pass `--model "<exact name>"`, or set it persistently via environment variables — `AGY_CODEX_DEFAULT_MODEL`, or per-tier `AGY_CODEX_TIER_FLASH` / `AGY_CODEX_TIER_FLASH_LO` / `AGY_CODEX_TIER_PRO`. Other knobs: `AGY_CODEX_DEFAULT_TIER`, `AGY_CODEX_TIMEOUT`, `AGY_CODEX_DIGEST_WARN_CHARS`. Keep the executor a *different, cheaper* model than the Codex conductor — that's what gives both the cost saving and the cross-model verification.
+**agy is multi-model.** Tiers default to Gemini Flash thinking levels, but you can use any model `agy models` lists: pass `--model "<exact name>"`, or set it persistently via environment variables — `AGY_CODEX_DEFAULT_MODEL`, or per-tier `AGY_CODEX_TIER_LOW` / `AGY_CODEX_TIER_MEDIUM` / `AGY_CODEX_TIER_HIGH`. Other knobs: `AGY_CODEX_DEFAULT_TIER`, `AGY_CODEX_TIMEOUT`, `AGY_CODEX_DIGEST_WARN_CHARS`. Keep the executor a *different, cheaper* model than the Codex conductor — that's what gives both the cost saving and the cross-model verification.
 
 ## 🚧 Guardrails & known limits
 

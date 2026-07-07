@@ -13,14 +13,14 @@
 #   * agy v1.0.x has NO `--output-format json`, so callers must parse plain text.
 #     This wrapper guarantees: non-empty stdout on success, non-zero exit on
 #     failure or empty output.
-#   * Human-friendly tier names (flash / pro) instead of exact model strings.
+#   * Human-friendly tier names (low / medium / high) instead of exact model strings.
 #
 # Usage:
 #   agy-delegate.sh [options] "the task prompt"
 #   echo "long prompt" | agy-delegate.sh [options] -      # read prompt from stdin
 #
 # Options:
-#   -t, --tier <flash|flash-lo|pro>  Model tier (default: flash)
+#   -t, --tier <low|medium|high>     Gemini Flash thinking level (default: medium)
 #   -d, --dir  <path>                Add a workspace dir (repeatable)
 #       --timeout <dur>              Print-mode timeout, e.g. 10m (default: 5m)
 #       --yolo                       Auto-approve all tool permissions (DANGEROUS)
@@ -39,14 +39,14 @@
 # orchestrators (e.g. agy-job.sh) can react without scraping prose:
 #   AGY_SIGNAL {"status":"QUOTA_EXHAUSTED","reason":"...","model":"...","retry":"--continue"}
 #
-# agy is multi-model: tiers map to Gemini by default, but you can point delegation at any
-# model `agy models` lists (e.g. Claude/GPT on plans that expose them). Defaults via env:
-# AGY_CODEX_DEFAULT_TIER, _TIMEOUT, _DEFAULT_MODEL (exact name), and per-tier remaps
-# _TIER_FLASH / _TIER_FLASH_LO / _TIER_PRO. Explicit --model/--tier win.
+# agy is multi-model: tiers map to Gemini Flash thinking levels by default, but you can
+# point delegation at any model `agy models` lists (e.g. Claude/GPT on plans that expose
+# them). Defaults via env: AGY_CODEX_DEFAULT_TIER, _TIMEOUT, _DEFAULT_MODEL (exact name),
+# and per-tier remaps _TIER_LOW / _TIER_MEDIUM / _TIER_HIGH. Explicit --model/--tier win.
 #
 set -euo pipefail
 
-TIER="${AGY_CODEX_DEFAULT_TIER:-flash}"
+TIER="${AGY_CODEX_DEFAULT_TIER:-medium}"
 TIMEOUT="${AGY_CODEX_TIMEOUT:-5m}"
 TIER_EXPLICIT=0
 MODEL=""
@@ -85,10 +85,10 @@ usage() { sed -n '/^# Usage:/,/^# Exit codes:/p' "$0" | sed 's/^# \{0,1\}//'; ex
 # Legacy CLAUDE_PLUGIN_OPTION_* names are not read — use AGY_CODEX_*.
 model_for_tier() {
   case "$1" in
-    flash)    echo "${AGY_CODEX_TIER_FLASH:-Gemini 3.5 Flash (High)}" ;;
-    flash-lo) echo "${AGY_CODEX_TIER_FLASH_LO:-Gemini 3.5 Flash (Low)}" ;;
-    pro)      echo "${AGY_CODEX_TIER_PRO:-Gemini 3.1 Pro (High)}" ;;
-    *) die "unknown tier '$1' (use flash | flash-lo | pro)" ;;
+    low)    echo "${AGY_CODEX_TIER_LOW:-Gemini 3.5 Flash (Low)}" ;;
+    medium) echo "${AGY_CODEX_TIER_MEDIUM:-Gemini 3.5 Flash (Medium)}" ;;
+    high)   echo "${AGY_CODEX_TIER_HIGH:-Gemini 3.5 Flash (High)}" ;;
+    *) die "unknown tier '$1' (use low | medium | high)" ;;
   esac
 }
 
@@ -174,8 +174,8 @@ if [ -z "$MODEL" ]; then
   else
     # default tier from userConfig; a bad value shouldn't make every call die.
     case "$TIER" in
-      flash|flash-lo|pro) ;;
-      *) echo "agy-delegate: invalid default tier '$TIER' (set AGY_CODEX_DEFAULT_TIER to flash|flash-lo|pro); using flash" >&2; TIER="flash" ;;
+      low|medium|high) ;;
+      *) echo "agy-delegate: invalid default tier '$TIER' (set AGY_CODEX_DEFAULT_TIER to low|medium|high); using medium" >&2; TIER="medium" ;;
     esac
     MODEL="$(model_for_tier "$TIER")"
   fi
