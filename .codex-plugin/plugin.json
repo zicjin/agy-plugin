@@ -1,0 +1,28 @@
+{
+  "name": "agy-plugin-codex",
+  "version": "0.2.0",
+  "description": "Delegate well-scoped subtasks from Codex to the Antigravity CLI (agy / Gemini) as a cheap subagent, with cost discipline and verification gates.",
+  "author": {
+    "name": "zicjin",
+    "url": "https://github.com/zicjin"
+  },
+  "homepage": "https://github.com/zicjin/agy-plugin-codex",
+  "repository": "https://github.com/zicjin/agy-plugin-codex",
+  "license": "MIT",
+  "keywords": ["antigravity", "agy", "gemini", "subagent", "delegation", "model-routing"],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Antigravity for Codex",
+    "shortDescription": "Use agy (Gemini) as a cheap subagent",
+    "longDescription": "Routes deterministic, high-volume work (scaffolding, test generation, migrations, bulk reads, web research) from Codex to the Antigravity CLI (agy / Gemini) via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. Codex keeps the judgement-heavy 20%.",
+    "developerName": "zicjin",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/zicjin/agy-plugin-codex",
+    "defaultPrompt": [
+      "Use agy-delegate to generate exhaustive unit tests for this module.",
+      "Use agy-research to run a cited multi-source research pass on this topic."
+    ]
+  }
+}

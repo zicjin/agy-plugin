@@ -213,6 +213,60 @@ grep -qF '# agy-plugin-codex' "$FAKE_HOME/.bashrc" \
   && { echo "FAIL: PATH line still present after uninstall"; FAIL=$((FAIL+1)); } \
   || { echo "ok: uninstall removed the PATH line"; PASS=$((PASS+1)); }
 
+echo "== plugin packaging =="
+py_ok() { python3 - 2>&1; }
+export ROOT
+out=$(py_ok <<'PY'
+import json, os, sys
+root = os.environ["ROOT"]
+m = json.load(open(os.path.join(root, ".codex-plugin", "plugin.json")))
+assert m["name"] == "agy-plugin-codex", "manifest name"
+assert m["version"], "manifest version"
+for f in ("skills", "hooks"):
+    p = m[f]
+    assert p.startswith("./"), f + " must be ./-prefixed"
+    assert os.path.exists(os.path.join(root, p)), f + " path missing: " + p
+print("MANIFEST_OK")
+PY
+); rc=$?
+check "plugin.json valid + component paths exist" 0 "$rc" "MANIFEST_OK" "$out"
+
+out=$(py_ok <<'PY'
+import json, os
+root = os.environ["ROOT"]
+m = json.load(open(os.path.join(root, ".agents", "plugins", "marketplace.json")))
+e = m["plugins"][0]
+assert e["name"] == "agy-plugin-codex"
+p = e["source"]["path"]
+assert p.startswith("./")
+assert os.path.exists(os.path.join(root, p, ".codex-plugin", "plugin.json")), "source.path has no manifest"
+assert e["policy"]["installation"] and e["policy"]["authentication"] and e["category"]
+print("MARKETPLACE_OK")
+PY
+); rc=$?
+check "marketplace.json valid + points at the plugin" 0 "$rc" "MARKETPLACE_OK" "$out"
+
+out=$(py_ok <<'PY'
+import json, os
+root = os.environ["ROOT"]
+h = json.load(open(os.path.join(root, "hooks", "hooks.json")))
+cmd = h["hooks"]["SessionStart"][0]["hooks"][0]["command"]
+assert "AGENTS-snippet.md" in cmd and "${PLUGIN_ROOT}" in cmd
+print("HOOKS_OK")
+PY
+); rc=$?
+check "hooks.json valid SessionStart hook" 0 "$rc" "HOOKS_OK" "$out"
+
+for skill in agy-delegate agy-review agy-research agy-jobs agy-setup; do
+  f="$ROOT/skills/$skill/SKILL.md"
+  if [ -f "$f" ] && head -1 "$f" | grep -q '^---$' \
+     && grep -q "^name: $skill$" "$f" && grep -q '^description: .' "$f"; then
+    echo "ok: skill $skill has valid frontmatter"; PASS=$((PASS+1))
+  else
+    echo "FAIL: skill $skill frontmatter invalid or missing"; FAIL=$((FAIL+1))
+  fi
+done
+
 echo ""
 echo "passed: $PASS  failed: $FAIL"
 [ "$FAIL" -eq 0 ]

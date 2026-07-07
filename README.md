@@ -11,7 +11,7 @@ Codex conducts the judgement; Gemini does the heavy lifting — intelligent mode
 
 </div>
 
-A Codex port of [antigravity-for-claude-code](https://github.com/yuting0624/antigravity-for-claude-code): the same robust `agy` delegation wrapper, background jobs, and routing/cost discipline — wired into Codex's native extension points (custom prompts in `~/.codex/prompts/` and `AGENTS.md`) instead of Claude Code's plugin system.
+A Codex port of [antigravity-for-claude-code](https://github.com/yuting0624/antigravity-for-claude-code): the same robust `agy` delegation wrapper, background jobs, and routing/cost discipline — packaged as an official [Codex plugin](https://developers.openai.com/codex/plugins) (skills + a SessionStart policy hook), with a legacy `install.sh` path (custom prompts + `AGENTS.md` snippet) for older Codex versions.
 
 ## 💡 Why
 
@@ -38,6 +38,21 @@ you → Codex (conduct: design / verify / review)
 
 ## 🚀 Install
 
+### As a Codex plugin (recommended)
+
+```bash
+codex plugin marketplace add zicjin/agy-plugin-codex
+```
+
+Then inside Codex run `/plugins`, pick the **Antigravity for Codex** marketplace, and install **agy-plugin-codex**. This gives you:
+
+- **Skills** — `$agy-delegate`, `$agy-review`, `$agy-research`, `$agy-jobs`, `$agy-setup` (type `$` or run `/skills`; Codex can also pick them implicitly when a task matches).
+- **SessionStart hook** — injects the routing policy + verification gates (`docs/AGENTS-snippet.md`) as developer context in every session, so Codex delegates **proactively** without you editing each repo's `AGENTS.md`. Plugin hooks aren't trusted automatically — Codex asks you to review and trust the hook once.
+
+Still run `install.sh` (below) if you want `agy-delegate` / `agy-job` / `agy-doctor` on your PATH as bare commands — otherwise the skills fall back to calling the bundled `scripts/*.sh` by path.
+
+### Manual install (older Codex, no plugin support)
+
 ```bash
 git clone https://github.com/zicjin/agy-plugin-codex ~/agy-plugin-codex
 ~/agy-plugin-codex/install.sh
@@ -46,7 +61,7 @@ git clone https://github.com/zicjin/agy-plugin-codex ~/agy-plugin-codex
 `install.sh` (idempotent; `--uninstall` reverses it):
 1. symlinks `prompts/*.md` into `~/.codex/prompts/` → slash commands `/agy-delegate`, `/agy-review`, `/agy-research`, `/agy-setup`, `/agy-status`, `/agy-result`, `/agy-cancel`;
 2. adds `bin/` to your PATH (in `~/.bashrc` / `~/.zshrc`) so Codex's shell tool can call `agy-delegate`, `agy-job`, `agy-doctor` by bare name;
-3. reminds you to paste `docs/AGENTS-snippet.md` into each repo's `AGENTS.md` — that's what makes Codex delegate **proactively** (the Codex equivalent of the Claude plugin's skill + session hook).
+3. reminds you to paste `docs/AGENTS-snippet.md` into each repo's `AGENTS.md` — that's what makes Codex delegate **proactively** without the plugin hook.
 
 Then verify: `agy-doctor` (or `/agy-setup` inside Codex).
 
@@ -56,15 +71,15 @@ Then verify: `agy-doctor` (or `/agy-setup` inside Codex).
 
 **Codex sandbox note:** in Codex's default sandbox, `agy` needs network access, so the delegation command may require approval. Approve it when prompted, or run Codex with a policy that allows it (e.g. `--sandbox danger-full-access` in a trusted environment, or add an approval rule for `agy-delegate`).
 
-## 🧩 Slash commands (custom prompts)
+## 🧩 Skills (plugin) / slash commands (manual install)
 
-| command | what it does |
-|---|---|
-| `/agy-setup` | health check — `agy` installed + authenticated, prompts installed, PATH wired |
-| `/agy-delegate [--tier flash\|pro] <task>` | delegate a subtask to agy under cost discipline, then verify |
-| `/agy-review [--adversarial]` | independent cross-model review of the current diff; Codex reconciles |
-| `/agy-research <topic>` | Codex-orchestrated deep research — agy does grounded web legwork, Codex verifies citations across ≥2 sources |
-| `/agy-status [id]` · `/agy-result <id>` · `/agy-cancel <id>` | manage background delegation jobs |
+| plugin skill | manual prompt | what it does |
+|---|---|---|
+| `$agy-setup` | `/agy-setup` | health check — `agy` installed + authenticated, wiring OK |
+| `$agy-delegate` | `/agy-delegate [--tier flash\|pro] <task>` | delegate a subtask to agy under cost discipline, then verify |
+| `$agy-review` | `/agy-review [--adversarial]` | independent cross-model review of the current diff; Codex reconciles |
+| `$agy-research` | `/agy-research <topic>` | Codex-orchestrated deep research — agy does grounded web legwork, Codex verifies citations across ≥2 sources |
+| `$agy-jobs` | `/agy-status [id]` · `/agy-result <id>` · `/agy-cancel <id>` | manage background delegation jobs |
 
 > Background jobs are for **interactive** sessions (fire-and-collect). In headless `codex exec` (one-shot), delegate **synchronously** — there's no later turn to collect a result.
 
@@ -113,12 +128,16 @@ ID=$(agy-job start --tier pro --dir . "big task"); agy-job result "$ID"
 ## 📦 What's inside · tests
 
 ```
-prompts/          Codex custom prompts (installed to ~/.codex/prompts): /agy-delegate, /agy-review, ...
-scripts/          agy-delegate.sh · agy-job.sh · doctor.sh
-bin/              bare-name entrypoints (agy-delegate, agy-job, agy-doctor) — install.sh puts this on PATH
-docs/AGENTS-snippet.md   the routing policy + verification gates to paste into a repo's AGENTS.md
-install.sh        wires prompts + PATH (idempotent; --uninstall reverses)
-tests/            dependency-free tests (stub agy); bash tests/run-tests.sh
+.codex-plugin/plugin.json        Codex plugin manifest
+.agents/plugins/marketplace.json repo marketplace (codex plugin marketplace add zicjin/agy-plugin-codex)
+skills/                          plugin skills: agy-delegate, agy-review, agy-research, agy-jobs, agy-setup
+hooks/hooks.json                 SessionStart hook — injects the delegation policy as session context
+prompts/                         legacy custom prompts (installed to ~/.codex/prompts by install.sh)
+scripts/                         agy-delegate.sh · agy-job.sh · doctor.sh
+bin/                             bare-name entrypoints (agy-delegate, agy-job, agy-doctor) — install.sh puts this on PATH
+docs/AGENTS-snippet.md           the routing policy + verification gates (hook context / AGENTS.md paste)
+install.sh                       manual install: wires prompts + PATH (idempotent; --uninstall reverses)
+tests/                           dependency-free tests (stub agy); bash tests/run-tests.sh
 ```
 
 **Tests** (no dependencies; stubs `agy`):
@@ -128,14 +147,14 @@ bash tests/run-tests.sh
 
 ## Differences from the Claude Code plugin
 
-Codex has no plugin marketplace, hooks, or subagent files, so this port maps each mechanism to a Codex-native one:
+Codex now has its own plugin system, so most mechanisms map directly; the rest fall back to Codex-native equivalents:
 
 | Claude Code plugin | this project |
 |---|---|
-| `/plugin install` + marketplace manifest | `git clone` + `install.sh` |
-| slash commands (`commands/*.md`) | custom prompts (`prompts/*.md` → `~/.codex/prompts/`) |
-| skill (`skills/antigravity/SKILL.md`) + SessionStart policy hook | `docs/AGENTS-snippet.md` pasted into the repo's `AGENTS.md` (Codex reads it natively) |
-| `antigravity-delegate` subagent | `/agy-delegate` prompt + AGENTS.md policy (Codex has no subagent files) |
+| `/plugin install` + marketplace manifest | `codex plugin marketplace add zicjin/agy-plugin-codex` (`.codex-plugin/plugin.json` + `.agents/plugins/marketplace.json`); or `git clone` + `install.sh` |
+| slash commands (`commands/*.md`) | plugin skills (`skills/*/SKILL.md`, invoked with `$`); legacy custom prompts (`prompts/*.md` → `~/.codex/prompts/`) |
+| skill (`skills/antigravity/SKILL.md`) + SessionStart policy hook | plugin SessionStart hook injecting `docs/AGENTS-snippet.md`; or paste the snippet into the repo's `AGENTS.md` |
+| `antigravity-delegate` subagent | `$agy-delegate` skill + delegation policy (Codex has no subagent files) |
 | plugin `userConfig` (`CLAUDE_PLUGIN_OPTION_*` env) | plain env vars (`AGY_CODEX_*`) |
 | plugin `bin/` auto on PATH | `install.sh` adds `bin/` to your shell rc |
 
