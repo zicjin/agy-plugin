@@ -12,7 +12,7 @@ The wrapper lives at `<plugin-root>/scripts/agy-delegate.sh` (plugin root = two
 directories above this SKILL.md; `agy-delegate` below means that script).
 
 Do this:
-1. Pick a tier (`flash` default; `flash-lo` for trivial; `pro` for hard reasoning).
+1. Pick a thinking level (`medium` default; `low` for trivial; `high` for harder reasoning).
    If the task needs the repo, add `--dir <repo-root>` so agy reads the real files
    (don't paste them into context).
    **If the task WRITES files or uses tools** (implement / scaffold / test-gen /
@@ -49,7 +49,7 @@ yourself.
 
 **Long task, interactive session?** A long sync delegation can hit the shell-tool
 time limit — start it in the background and keep working:
-`ID=$(agy-job start --tier pro --dir . "<task>")`
+`ID=$(agy-job start --tier high --dir . "<task>")`
 then check with `agy-job status "$ID"` and collect with `agy-job result "$ID"`
 (see the `agy-jobs` skill). Don't do this when YOU are headless `codex exec` —
 one-shot, no later turn to collect; delegate synchronously there.

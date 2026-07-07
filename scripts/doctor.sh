@@ -71,10 +71,10 @@ if command -v agy >/dev/null 2>&1; then
     ok "agy authenticated — $(printf '%s' "$MODELS" | grep -c . ) models available"
     # 2b. configured tier->model names exist (respecting env remaps). agy is
     # multi-model and plan-dependent, so a miss is a WARNING, not a failure.
-    FLASH="${AGY_CODEX_TIER_FLASH:-Gemini 3.5 Flash (High)}"
-    FLASH_LO="${AGY_CODEX_TIER_FLASH_LO:-Gemini 3.5 Flash (Low)}"
-    PRO="${AGY_CODEX_TIER_PRO:-Gemini 3.1 Pro (High)}"
-    for m in "$FLASH" "$FLASH_LO" "$PRO"; do
+    LOW="${AGY_CODEX_TIER_LOW:-Gemini 3.5 Flash (Low)}"
+    MEDIUM="${AGY_CODEX_TIER_MEDIUM:-Gemini 3.5 Flash (Medium)}"
+    HIGH="${AGY_CODEX_TIER_HIGH:-Gemini 3.5 Flash (High)}"
+    for m in "$LOW" "$MEDIUM" "$HIGH"; do
       if printf '%s' "$MODELS" | grep -qF "$m"; then
         ok "tier model present: $m"
       else

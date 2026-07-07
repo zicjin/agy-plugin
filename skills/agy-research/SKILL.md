@@ -19,10 +19,10 @@ Do this:
 2. **Fan-out fetch (agy, cheap, one call per sub-question).** Web search needs
    `--yolo` in headless mode; force compact output so bulky pages stay on Gemini's
    side, not yours:
-   `agy-delegate --tier flash --yolo "Web-search <sub-question>. Return 5–8 bullet findings, each with the exact source URL and publication date. Output ONLY findings + URLs + dates."`
+   `agy-delegate --tier medium --yolo "Web-search <sub-question>. Return 5–8 bullet findings, each with the exact source URL and publication date. Output ONLY findings + URLs + dates."`
 3. **Deepen on each load-bearing claim (agy).** Name the URL and have agy quote the
    supporting sentence(s), turning domain-level citations into verifiable quotes:
-   `agy-delegate --tier pro --yolo "Open <URL> and quote the exact sentence(s) supporting: '<claim>'. If the page does not support it, reply NOT SUPPORTED."`
+   `agy-delegate --tier high --yolo "Open <URL> and quote the exact sentence(s) supporting: '<claim>'. If the page does not support it, reply NOT SUPPORTED."`
 4. **Adversarially verify (you).** Corroborate each key claim across ≥2 independent
    domains; treat any single / vague / domain-only citation as unverified;
    sanity-check dates; watch for Gemini parametric knowledge posing as a sourced

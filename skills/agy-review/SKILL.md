@@ -21,11 +21,11 @@ Do this:
    (~1–2 files) → review synchronously. Bigger or unclear, in an interactive
    session → run it as a background job and keep working (redirect the diff from a
    file, not a pipe — the job detaches):
-   `git diff > /tmp/review.diff && ID=$(agy-job start --tier pro - < /tmp/review.diff)`
+   `git diff > /tmp/review.diff && ID=$(agy-job start --tier high - < /tmp/review.diff)`
    then collect via `agy-job result "$ID"`. Headless `codex exec` → always
    synchronous.
-3. Delegate the review to agy (pro tier) — pipe the diff in on stdin:
-   - Normal review: `git diff | agy-delegate --tier pro -` with an instruction to
+3. Delegate the review to agy (high tier) — pipe the diff in on stdin:
+   - Normal review: `git diff | agy-delegate --tier high -` with an instruction to
      find correctness/security/performance bugs, be skeptical, and list each as
      `file:line — issue`, most severe first.
    - **Adversarial review** (user asked to challenge the approach, or wants a

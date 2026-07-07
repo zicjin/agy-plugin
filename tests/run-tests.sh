@@ -61,11 +61,14 @@ check "unknown option -> exit 1" 1 "$rc"
 out=$("$DELEGATE" --tier 2>/dev/null); rc=$?
 check "option without value -> exit 1 (friendly)" 1 "$rc"
 
-out=$(STUB_MODE=args "$DELEGATE" --tier flash "hi" 2>/dev/null); rc=$?
-check "flash tier -> correct model string" 0 "$rc" "Gemini 3.5 Flash (High)" "$out"
+out=$(STUB_MODE=args "$DELEGATE" "hi" 2>/dev/null); rc=$?
+check "default tier -> Flash Medium" 0 "$rc" "Gemini 3.5 Flash (Medium)" "$out"
 
-out=$(STUB_MODE=args "$DELEGATE" --tier pro "hi" 2>/dev/null); rc=$?
-check "pro tier -> correct model string" 0 "$rc" "Gemini 3.1 Pro (High)" "$out"
+out=$(STUB_MODE=args "$DELEGATE" --tier low "hi" 2>/dev/null); rc=$?
+check "low tier -> correct model string" 0 "$rc" "Gemini 3.5 Flash (Low)" "$out"
+
+out=$(STUB_MODE=args "$DELEGATE" --tier high "hi" 2>/dev/null); rc=$?
+check "high tier -> correct model string" 0 "$rc" "Gemini 3.5 Flash (High)" "$out"
 
 out=$(printf 'piped prompt' | STUB_MODE=args "$DELEGATE" - 2>/dev/null); rc=$?
 check "stdin prompt (-) read" 0 "$rc" "-p" "$out"
@@ -92,21 +95,21 @@ else
 fi
 
 # env default tier; explicit --tier still wins
-out=$(STUB_MODE=args AGY_CODEX_DEFAULT_TIER=pro "$DELEGATE" "hi" 2>/dev/null); rc=$?
-check "AGY_CODEX_DEFAULT_TIER=pro -> Pro model" 0 "$rc" "Gemini 3.1 Pro (High)" "$out"
+out=$(STUB_MODE=args AGY_CODEX_DEFAULT_TIER=high "$DELEGATE" "hi" 2>/dev/null); rc=$?
+check "AGY_CODEX_DEFAULT_TIER=high -> Flash High" 0 "$rc" "Gemini 3.5 Flash (High)" "$out"
 
-out=$(STUB_MODE=args AGY_CODEX_DEFAULT_TIER=pro "$DELEGATE" --tier flash "hi" 2>/dev/null); rc=$?
-check "explicit --tier overrides env default" 0 "$rc" "Gemini 3.5 Flash (High)" "$out"
+out=$(STUB_MODE=args AGY_CODEX_DEFAULT_TIER=high "$DELEGATE" --tier low "hi" 2>/dev/null); rc=$?
+check "explicit --tier overrides env default" 0 "$rc" "Gemini 3.5 Flash (Low)" "$out"
 
 # multi-model: default_model + per-tier remap (agy supports Claude/GPT on some plans)
 out=$(STUB_MODE=args AGY_CODEX_DEFAULT_MODEL="Claude Sonnet 4.5" "$DELEGATE" "hi" 2>/dev/null); rc=$?
 check "AGY_CODEX_DEFAULT_MODEL -> used as-is" 0 "$rc" "Claude Sonnet 4.5" "$out"
-out=$(STUB_MODE=args AGY_CODEX_DEFAULT_MODEL="Claude Sonnet 4.5" "$DELEGATE" --tier flash "hi" 2>/dev/null); rc=$?
+out=$(STUB_MODE=args AGY_CODEX_DEFAULT_MODEL="Claude Sonnet 4.5" "$DELEGATE" --tier high "hi" 2>/dev/null); rc=$?
 check "explicit --tier beats default model" 0 "$rc" "Gemini 3.5 Flash (High)" "$out"
 out=$(STUB_MODE=args AGY_CODEX_DEFAULT_MODEL="Claude Sonnet 4.5" "$DELEGATE" -m "GPT-X" "hi" 2>/dev/null); rc=$?
 check "explicit --model beats default model" 0 "$rc" "GPT-X" "$out"
-out=$(STUB_MODE=args AGY_CODEX_TIER_FLASH="Claude Sonnet 4.5" "$DELEGATE" --tier flash "hi" 2>/dev/null); rc=$?
-check "AGY_CODEX_TIER_FLASH remap -> flash uses remapped model" 0 "$rc" "Claude Sonnet 4.5" "$out"
+out=$(STUB_MODE=args AGY_CODEX_TIER_MEDIUM="Claude Sonnet 4.5" "$DELEGATE" --tier medium "hi" 2>/dev/null); rc=$?
+check "AGY_CODEX_TIER_MEDIUM remap -> medium uses remapped model" 0 "$rc" "Claude Sonnet 4.5" "$out"
 
 # default + env timeout, with explicit flag winning
 out=$(STUB_MODE=args "$DELEGATE" "hi" 2>/dev/null); rc=$?
@@ -116,9 +119,9 @@ check "AGY_CODEX_TIMEOUT=9m -> --print-timeout 9m" 0 "$rc" "--print-timeout 9m" 
 out=$(STUB_MODE=args AGY_CODEX_TIMEOUT=9m "$DELEGATE" --timeout 3m "hi" 2>/dev/null); rc=$?
 check "explicit --timeout overrides env" 0 "$rc" "--print-timeout 3m" "$out"
 
-# invalid default tier from env falls back to flash; explicit --tier typo still errors
+# invalid default tier from env falls back to medium; explicit --tier typo still errors
 out=$(STUB_MODE=args AGY_CODEX_DEFAULT_TIER=bogus "$DELEGATE" "hi" 2>/dev/null); rc=$?
-check "invalid env tier -> falls back to flash" 0 "$rc" "Gemini 3.5 Flash (High)" "$out"
+check "invalid env tier -> falls back to medium" 0 "$rc" "Gemini 3.5 Flash (Medium)" "$out"
 out=$("$DELEGATE" --tier bogus "hi" 2>/dev/null); rc=$?
 check "explicit --tier bogus -> exit 1" 1 "$rc"
 
@@ -127,9 +130,9 @@ out=$(PATH="/usr/bin:/bin" "$DELEGATE" "hi" 2>&1); rc=$?
 check "agy missing -> exit 13 + AGY_MISSING signal" 13 "$rc" "AGY_MISSING" "$out"
 
 # --print-command: dry run prints the resolved agy invocation and exits 0 (agy not run)
-out=$("$DELEGATE" --tier pro --print-command "hi" 2>/dev/null); rc=$?
+out=$("$DELEGATE" --tier high --print-command "hi" 2>/dev/null); rc=$?
 check "--print-command -> exit 0 + resolved flags" 0 "$rc" "--print-timeout 5m" "$out"
-check "--print-command shows the tier model" 0 "$rc" "Pro" "$out"
+check "--print-command shows the tier model" 0 "$rc" "High" "$out"
 out=$(PATH="/usr/bin:/bin" "$DELEGATE" --print-command "hi" 2>/dev/null); rc=$?
 check "--print-command works without agy on PATH" 0 "$rc" "--print-timeout" "$out"
 
