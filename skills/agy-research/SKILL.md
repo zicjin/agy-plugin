@@ -9,7 +9,7 @@ search worker; **you (Codex) own the plan, the verification, and the synthesis**
 agy's print-mode citations are coarse (often domain-level) and it can present
 parametric "knowledge" as a sourced fact — so never ship its citations unchecked.
 
-Use `agy-delegate` from PATH, or `<plugin-root>/scripts/agy-delegate.sh` (plugin
+Use the wrapper at `<plugin-root>/scripts/agy-delegate.sh` (plugin
 root = two directories above this SKILL.md). If the topic is unclear, ask the user
 what to research before starting.
 

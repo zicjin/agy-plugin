@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # run-tests.sh — dependency-free tests (no bats). Stubs `agy` on PATH and asserts
-# agy-delegate.sh, agy-job.sh, and install.sh behavior.
+# agy-delegate.sh, agy-job.sh, and plugin packaging behavior.
 #
 #   bash tests/run-tests.sh
 #
@@ -188,30 +188,6 @@ id=$(STUB_MODE=quota "$JOB" start "hi" 2>/dev/null)
 for _ in $(seq 1 50); do st=$("$JOB" status "$id" 2>/dev/null | grep -o 'state=[a-z]*'); [ "$st" = "state=failed" ] && break; sleep 0.2; done
 out=$("$JOB" status "$id" 2>&1); rc=$?
 check "quota job -> failed + QUOTA signal surfaced" 0 "$rc" "QUOTA_EXHAUSTED" "$out"
-
-echo "== install.sh =="
-FAKE_HOME="$TMP/home"; mkdir -p "$FAKE_HOME"; touch "$FAKE_HOME/.bashrc"
-out=$(HOME="$FAKE_HOME" CODEX_HOME="$FAKE_HOME/.codex" "$ROOT/install.sh" 2>&1); rc=$?
-check "install exits 0" 0 "$rc" "installed prompt: /agy-delegate" "$out"
-[ -L "$FAKE_HOME/.codex/prompts/agy-delegate.md" ] \
-  && { echo "ok: prompt symlinked into CODEX_HOME/prompts"; PASS=$((PASS+1)); } \
-  || { echo "FAIL: prompt not symlinked"; FAIL=$((FAIL+1)); }
-grep -qF '# agy-plugin-codex' "$FAKE_HOME/.bashrc" \
-  && { echo "ok: PATH line added to .bashrc"; PASS=$((PASS+1)); } \
-  || { echo "FAIL: PATH line not added"; FAIL=$((FAIL+1)); }
-out=$(HOME="$FAKE_HOME" CODEX_HOME="$FAKE_HOME/.codex" "$ROOT/install.sh" 2>&1); rc=$?
-check "install is idempotent" 0 "$rc"
-n=$(grep -cF '# agy-plugin-codex' "$FAKE_HOME/.bashrc")
-[ "$n" = "1" ] && { echo "ok: PATH line not duplicated"; PASS=$((PASS+1)); } \
-  || { echo "FAIL: PATH line duplicated ($n)"; FAIL=$((FAIL+1)); }
-out=$(HOME="$FAKE_HOME" CODEX_HOME="$FAKE_HOME/.codex" "$ROOT/install.sh" --uninstall 2>&1); rc=$?
-check "uninstall exits 0" 0 "$rc"
-[ ! -e "$FAKE_HOME/.codex/prompts/agy-delegate.md" ] \
-  && { echo "ok: uninstall removed the prompt symlinks"; PASS=$((PASS+1)); } \
-  || { echo "FAIL: prompt symlink still present after uninstall"; FAIL=$((FAIL+1)); }
-grep -qF '# agy-plugin-codex' "$FAKE_HOME/.bashrc" \
-  && { echo "FAIL: PATH line still present after uninstall"; FAIL=$((FAIL+1)); } \
-  || { echo "ok: uninstall removed the PATH line"; PASS=$((PASS+1)); }
 
 echo "== plugin packaging =="
 py_ok() { python3 - 2>&1; }

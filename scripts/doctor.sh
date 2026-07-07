@@ -2,11 +2,10 @@
 #
 # doctor.sh — read-only health check for agy-plugin-codex (Antigravity for Codex).
 # Verifies the agy CLI is installed + authenticated and the plugin is wired up
-# (scripts executable, Codex prompts installed).
+# (scripts executable).
 #
 set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$(cd "$HERE/.." && pwd)"
 ok()   { printf '  ✓ %s\n' "$*"; }
 bad()  { printf '  ✗ %s\n' "$*"; FAIL=1; }
 warn() { printf '  ⚠ %s\n' "$*"; }   # advisory; does NOT fail the check
@@ -108,32 +107,7 @@ for s in agy-delegate.sh agy-job.sh doctor.sh; do
   fi
 done
 
-# 4b. bin/ entrypoints executable (put ROOT/bin on PATH so prompts can call bare names)
-for b in agy-delegate agy-job agy-doctor; do
-  if [ -x "$ROOT/bin/$b" ]; then ok "bin/$b executable"; else
-    bad "bin/$b not executable"; info "fix: chmod +x \"$ROOT/bin/$b\""
-  fi
-done
-
-# 4c. bin/ on PATH (Codex has no plugin PATH injection — install.sh sets this up)
-case ":$PATH:" in
-  *":$ROOT/bin:"*) ok "bin/ on PATH" ;;
-  *) warn "bin/ not on PATH — prompts call bare names like \`agy-delegate\`"
-     info "fix: run install.sh, or add: export PATH=\"$ROOT/bin:\$PATH\"" ;;
-esac
-
-# 5. Codex custom prompts installed (~/.codex/prompts)
-PROMPTS_DIR="${CODEX_HOME:-$HOME/.codex}/prompts"
-MISSING=0
-for p in "$ROOT"/prompts/*.md; do
-  n="$(basename "$p")"
-  if [ -e "$PROMPTS_DIR/$n" ]; then ok "prompt installed: $n"; else
-    warn "prompt not installed: $n"; MISSING=1
-  fi
-done
-[ "$MISSING" -eq 1 ] && info "fix: run install.sh (symlinks prompts into ${PROMPTS_DIR/#$HOME/~})"
-
-# 5b. WSL: agy --add-dir over a Windows mount (/mnt/*) reads via a slow 9p bridge
+# 5. WSL: agy --add-dir over a Windows mount (/mnt/*) reads via a slow 9p bridge
 if grep -qi microsoft /proc/version 2>/dev/null || [ -n "${WSL_DISTRO_NAME:-}" ]; then
   case "$PWD" in
     /mnt/*)

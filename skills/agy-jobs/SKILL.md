@@ -3,9 +3,9 @@ name: agy-jobs
 description: Manage background Antigravity (agy) delegation jobs — list them, check status, fetch a finished job's result, or cancel one. Use in interactive sessions when a long delegation was started with agy-job.
 ---
 
-Manage background agy delegation jobs with the `agy-job` wrapper (from PATH, or
-`<plugin-root>/scripts/agy-job.sh`; plugin root = two directories above this
-SKILL.md).
+Manage background agy delegation jobs with the wrapper at
+`<plugin-root>/scripts/agy-job.sh` (plugin root = two directories above this
+SKILL.md; `agy-job` below means that script).
 
 - **List / status**: `agy-job list` for jobs started from this directory, or
   `agy-job status <id>` for one job. Report each job's id, state

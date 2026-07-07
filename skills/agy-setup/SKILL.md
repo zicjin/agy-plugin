@@ -5,14 +5,13 @@ description: Verify the Antigravity (agy) CLI is installed and authenticated and
 
 Run the plugin's doctor and report status.
 
-Run: `agy-doctor` (from PATH), or `<plugin-root>/scripts/doctor.sh` (plugin root =
-two directories above this SKILL.md).
+Run: `<plugin-root>/scripts/doctor.sh` (plugin root = two directories above this
+SKILL.md).
 
 Then summarize for the user:
 - Is `agy` installed, and can it list models (i.e. authenticated)?
-- Are the plugin scripts executable and `bin/` on PATH?
+- Are the plugin scripts executable?
 - What GCP project / region / default model is `agy` configured for?
 
 If anything is missing or failing, give the **exact** command to fix it (install
-agy, authenticate, `chmod +x` the scripts, re-run `install.sh`, etc.). Keep it
-short and actionable.
+agy, authenticate, `chmod +x` the scripts, etc.). Keep it short and actionable.

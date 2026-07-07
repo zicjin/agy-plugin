@@ -6,7 +6,7 @@ description: Get an independent cross-model review of the current diff from Anti
 Use Antigravity (`agy` / Gemini) as an **independent, different-model reviewer** of
 the current changes, then reconcile the findings yourself (you are the final judge).
 
-Use `agy-delegate` from PATH, or `<plugin-root>/scripts/agy-delegate.sh` (plugin
+Use the wrapper at `<plugin-root>/scripts/agy-delegate.sh` (plugin
 root = two directories above this SKILL.md).
 
 **This skill is review-only.** Do not fix issues or apply patches as part of it.

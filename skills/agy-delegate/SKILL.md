@@ -8,9 +8,8 @@ following the **Cost discipline** and **Verification gates** in the plugin's
 delegation policy (injected at session start; also at `docs/AGENTS-snippet.md` in
 the plugin root, two directories above this SKILL.md).
 
-Locating the wrapper: run `agy-delegate` if it is on PATH; otherwise run
-`<plugin-root>/scripts/agy-delegate.sh` (plugin root = two directories above this
-SKILL.md).
+The wrapper lives at `<plugin-root>/scripts/agy-delegate.sh` (plugin root = two
+directories above this SKILL.md; `agy-delegate` below means that script).
 
 Do this:
 1. Pick a tier (`flash` default; `flash-lo` for trivial; `pro` for hard reasoning).
