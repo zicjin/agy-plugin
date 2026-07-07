@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# bin/ entrypoint. Codex has no plugin PATH injection, so install.sh puts this bin/
+# dir on PATH; prompts and AGENTS.md call the bare name, which forwards to ../scripts/doctor.sh.
+exec "$(cd "$(dirname "$0")/.." && pwd)/scripts/doctor.sh" "$@"
