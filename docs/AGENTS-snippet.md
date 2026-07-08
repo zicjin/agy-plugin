@@ -14,7 +14,7 @@ terminal agent (file edits, terminal, subagents, web/Vertex AI Search) — via t
 path). The organizing idea is **intelligent model routing
 across the SDLC**: you keep judgement-heavy work (requirements, architecture, the hard
 20%, verification, review); route deterministic, high-volume work (scaffolding,
-boilerplate, test generation, first-pass review, migrations, bulk reads, web search)
+boilerplate, test generation, migrations, bulk reads, web search)
 to the cheaper, faster executor.
 
 ### How to call it
@@ -27,7 +27,7 @@ ID=$(agy-job start --tier high --dir . "big task"); agy-job result "$ID"   # bac
 ```
 
 - Tiers are Gemini Flash thinking levels: `medium` (default, bulk) · `low` (cheapest,
-  trivial) · `high` (harder reasoning / reviews / cross-checks). Remap via env `AGY_TIER_*`,
+  trivial) · `high` (harder reasoning / verification retries). Remap via env `AGY_TIER_*`,
   `AGY_DEFAULT_MODEL`, or pass `--model "<exact name from agy models>"` — keep
   the executor a *different, cheaper* model than you.
 - **Always pass `--dir <repo-root>` for repo work** so agy loads AGENTS.md and the real
@@ -71,6 +71,5 @@ If wrong: retry on `--tier high`, sharpen the spec, or do that piece yourself.
 
 Proactively consider delegation when a request looks like bulk work above the
 break-even: mass edits/migrations, exhaustive test generation, fan-out web research,
-long-context reads that reduce to a short digest, or an independent cross-model review
-(`git diff | agy-delegate --tier high -`). It's advisory — the break-even judgment is
-yours per task.
+or long-context reads that reduce to a short digest. Code review stays with you —
+don't delegate it. It's advisory — the break-even judgment is yours per task.

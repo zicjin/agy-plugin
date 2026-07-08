@@ -5,7 +5,7 @@
 #
 # Purpose: let Codex (the orchestrator) hand a single, well-scoped subtask
 # to an Antigravity (Gemini) agent via `agy --print`, and get clean text back on
-# stdout — for delegation, cross-model checks, or offloading bulk work.
+# stdout — for delegation and offloading bulk work.
 #
 # Why a wrapper instead of calling `agy` directly:
 #   * `agy --print` silently drops stdout when stdin is a non-TTY -> we always

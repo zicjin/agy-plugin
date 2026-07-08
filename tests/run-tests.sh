@@ -258,7 +258,7 @@ PY
 ); rc=$?
 check "claude plugin manifest + hooks + marketplace valid" 0 "$rc" "CLAUDE_OK" "$out"
 
-for skill in agy-delegate agy-review agy-research agy-jobs agy-setup agy-prompting; do
+for skill in agy-delegate agy-research agy-jobs agy-setup agy-prompting; do
   f="$ROOT/skills/$skill/SKILL.md"
   if [ -f "$f" ] && head -1 "$f" | grep -q '^---$' \
      && grep -q "^name: $skill$" "$f" && grep -q '^description: .' "$f"; then
@@ -267,13 +267,6 @@ for skill in agy-delegate agy-review agy-research agy-jobs agy-setup agy-prompti
     echo "FAIL: skill $skill frontmatter invalid or missing"; FAIL=$((FAIL+1))
   fi
 done
-
-if head -1 "$ROOT/docs/adversarial-review-prompt.md" | grep -q '^<role>$' \
-   && grep -q '^<diff>$' "$ROOT/docs/adversarial-review-prompt.md"; then
-  echo "ok: adversarial review prompt has role block and trailing diff block"; PASS=$((PASS+1))
-else
-  echo "FAIL: adversarial review prompt malformed"; FAIL=$((FAIL+1))
-fi
 
 echo ""
 echo "passed: $PASS  failed: $FAIL"
