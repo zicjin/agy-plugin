@@ -54,10 +54,10 @@ Then inside Codex run `/plugins`, pick the **Antigravity (agy) delegation** mark
 
 Both give you:
 
-- **Skills** — `agy-delegate`, `agy-research`, `agy-jobs`, `agy-setup` (Codex: type `$` or run `/skills`; Claude Code: picked automatically or via `/skill`; both can also pick them implicitly when a task matches).
+- **Skills** — `agy-delegate`, `agy-research`, `agy-jobs`, `agy-setup`. Installed skills are namespaced with the plugin name, so invoke them as `$agy-plugin:agy-setup` etc. in Codex (type `$` or run `/skills` to autocomplete); in Claude Code they're picked automatically or via `/skill`. Both agents can also pick them implicitly when a task matches.
 - **SessionStart hook** — injects the routing policy + verification gates (`docs/AGENTS-snippet.md`) as session context in every session, so your agent delegates **proactively** without you editing each repo's `AGENTS.md`. Plugin hooks aren't trusted automatically — you review and trust the hook once on install.
 
-The skills call the bundled `scripts/*.sh` by path — no PATH setup needed. Verify with the `agy-setup` skill (or run the plugin's `scripts/doctor.sh` directly).
+The skills call the bundled `scripts/*.sh` by path — no PATH setup needed. Verify with the setup skill — `$agy-plugin:agy-setup` in Codex — (or run the plugin's `scripts/doctor.sh` directly).
 
 **Prerequisites:** the [Antigravity CLI](https://antigravity.google/docs/cli-using) (`agy`) installed & authenticated (`agy models` lists models), and [Codex CLI](https://github.com/openai/codex) or [Claude Code](https://code.claude.com/docs).
 
