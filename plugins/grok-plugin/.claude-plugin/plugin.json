@@ -1,0 +1,19 @@
+{
+  "name": "grok-plugin",
+  "version": "0.4.0",
+  "description": "Routes high-volume work to Grok Build via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. Prefer when the task needs stronger reasoning than Gemini Flash; install agy-plugin for cheaper lower-intelligence bulk work.",
+  "author": {
+    "name": "zicjin",
+    "url": "https://github.com/zicjin"
+  },
+  "homepage": "https://github.com/zicjin/subvibe",
+  "repository": "https://github.com/zicjin/subvibe",
+  "license": "MIT",
+  "keywords": [
+    "grok",
+    "xai",
+    "subagent",
+    "delegation"
+  ],
+  "hooks": "./hooks/claude-hooks.json"
+}

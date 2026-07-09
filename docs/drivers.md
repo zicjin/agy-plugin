@@ -1,74 +1,78 @@
-# Subagent CLI drivers
+# Subagent CLI drivers (plugin packaging)
 
-`scripts/subvibe-delegate.sh` is split into a **CLI-agnostic core** and one
-**driver** per subagent CLI (`scripts/drivers/<name>.sh`). The core owns
-everything a conductor relies on regardless of which CLI executes the work;
-the driver owns everything specific to that CLI.
+This repo is a **marketplace** (`subvibe`) that ships **two installable plugins**:
+
+| plugin | executor | install (Claude) | install (Codex) |
+| --- | --- | --- | --- |
+| `agy-plugin` | Antigravity CLI (`agy` / Gemini Flash) | `/plugin install agy-plugin@subvibe` | install **agy-plugin** from the subvibe marketplace |
+| `grok-plugin` | Grok Build (`grok`) | `/plugin install grok-plugin@subvibe` | install **grok-plugin** from the subvibe marketplace |
+
+Each plugin is **single-driver**: the executor is fixed at package time. There is **no**
+`SUBVIBE_DRIVER` env var and **no** `--driver` flag. Users pick a driver by installing
+the matching plugin. If both plugins are installed, the **conductor agent** routes per
+task (see each plugin's `docs/AGENTS-snippet.md`).
+
+## Layout
+
+```
+plugins/
+  agy-plugin/          # self-contained install unit
+    scripts/
+      agy-delegate.sh  # core + DRIVER=agy
+      agy-job.sh
+      doctor.sh
+      drivers/agy.sh
+    skills/ hooks/ docs/
+  grok-plugin/         # self-contained install unit
+    scripts/
+      grok-delegate.sh # core + DRIVER=grok
+      ...
+scripts/               # source templates for the generator (not installed)
+  subvibe-delegate.sh
+  subvibe-job.sh
+  drivers/{agy,grok}.sh
+  _gen_plugins.py      # regenerates plugins/* from templates
+```
+
+Regenerate after editing templates:
+
+```bash
+python scripts/_gen_plugins.py
+```
+
+## Core vs driver (inside each plugin)
 
 | Layer | Owns |
 | --- | --- |
-| core (`subvibe-delegate.sh`) | arg parsing · tier resolution & precedence · `--digest` output contract · stdin detach · wall-clock hang guard · empty-output check · digest-size guard · structured exit codes · `SUBVIBE_SIGNAL` machine-readable failures |
-| driver (`drivers/<name>.sh`) | binary name · tier → model names (+ env remaps) · flag mapping · stderr → error classification · CLI-specific quirks & warnings |
+| core (`*-delegate.sh`) | arg parsing · tier resolution · `--digest` · hang guard · digest-size guard · structured exit codes · `SUBVIBE_SIGNAL` |
+| driver (`drivers/<name>.sh`) | binary name · tier → model names · flag mapping · stderr classification · CLI quirks |
 
-The background-job layer (`subvibe-job.sh`) sits on top of the core and is
-driver-agnostic for free — it only consumes the core's exit codes and signals.
-
-## Selecting a driver
-
-```bash
-subvibe-delegate.sh --driver agy "task"   # per call
-export SUBVIBE_DRIVER=agy                 # session/global default for all calls
-```
-
-The built-in default (used when neither `--driver` nor `SUBVIBE_DRIVER` is
-set) is `grok`, defined in one place: the `DRIVER="${SUBVIBE_DRIVER:-grok}"`
-line near the top of `scripts/subvibe-delegate.sh`.
-
-Available drivers:
-
-| driver | CLI | tier mapping |
-| --- | --- | --- |
-| `agy` | Antigravity CLI | tier → Gemini Flash thinking-level model names (`AGY_TIER_*`) |
-| `grok` (default) | Grok Build (x.ai/cli) | low → `grok-composer-2.5-fast`; medium/high → `grok-4.5` + `--reasoning-effort` (`GROK_TIER_*`) |
+The background-job layer (`*-job.sh`) sits on the core and is driver-agnostic except for
+which delegate binary it launches.
 
 ## Driver interface
 
-A driver is a bash file that is **sourced** (not executed) by the core. It must
-define:
+A driver is a bash file **sourced** by the core. It must define:
 
 | Symbol | Contract |
 | --- | --- |
-| `DRIVER_BIN` | binary name looked up on PATH (missing → exit 13 + `CLI_MISSING` signal) |
-| `DRIVER_INSTALL_HINT` | one-line install hint shown when the binary is missing |
-| `driver_model_for_tier <low\|medium\|high>` | echo the exact model name; return 1 on an unknown tier |
-| `driver_build_args` | fill `DRIVER_ARGS` (flags) and `DRIVER_PROMPT_ARGS` (prompt args, appended last) from the normalized inputs |
-| `driver_classify_error <stderr-blob>` | echo `QUOTA_EXHAUSTED` \| `AUTH_REQUIRED` \| `TIMEOUT`, or nothing (→ generic failure, exit 2) |
-| `driver_auth_hint` | echo a one-line re-auth hint for `AUTH_REQUIRED` |
-| `driver_prompt_notes` | advisory stderr notes before running (never fail) |
-| `driver_no_guard_warning` | warning when no `timeout`/`gtimeout` guard is available |
-| `driver_hang_hint` | extra stderr hint when the wall-clock guard killed the CLI |
+| `DRIVER_BIN` | binary name on PATH (missing → exit 13 + `CLI_MISSING`) |
+| `DRIVER_INSTALL_HINT` | one-line install hint |
+| `driver_model_for_tier <low\|medium\|high>` | echo model name; return 1 if unknown |
+| `driver_build_args` | fill `DRIVER_ARGS` + `DRIVER_PROMPT_ARGS` |
+| `driver_classify_error <stderr>` | `QUOTA_EXHAUSTED` \| `AUTH_REQUIRED` \| `TIMEOUT` \| empty |
+| `driver_auth_hint` | re-auth one-liner |
+| `driver_prompt_notes` | advisory stderr (never fail) |
+| `driver_no_guard_warning` | warning when no wall-clock guard |
+| `driver_hang_hint` | extra hint after hang-guard kill |
 
-Normalized inputs the core sets before calling driver functions (read-only):
-`MODEL` `TIER` `TIMEOUT` `ADD_DIRS[]` `YOLO` `SANDBOX` `CONTINUE` `CONV_ID`
-`PROMPT` `PRINT_CMD`. Helpers available: `on_wsl`, `on_windows_native`.
+Normalized inputs (read-only): `MODEL` `TIER` `TIMEOUT` `ADD_DIRS[]` `YOLO`
+`SANDBOX` `CONTINUE` `CONV_ID` `PROMPT` `PRINT_CMD`. Helpers: `on_wsl`,
+`on_windows_native`.
 
-The invocation the core runs is:
+## Adding another executor
 
-```
-$DRIVER_BIN "${DRIVER_ARGS[@]}" "${DRIVER_PROMPT_ARGS[@]}" < /dev/null
-```
-
-wrapped in a wall-clock `timeout` guard when available.
-
-## Adding a new driver (e.g. devin)
-
-1. Copy `drivers/agy.sh` or `drivers/grok.sh` to `drivers/<name>.sh` and map
-   the flags. Devin CLI is the same shape (local headless coding CLI: prompt
-   in, stdout out): `-p` single-turn, `--continue` / `--resume <id>`,
-   `--permission-mode bypass` for yolo, `--sandbox`.
-2. Verify the CLI's headless behavior empirically before shipping: exact
-   `--model`-style flag, whether stdout survives a non-TTY caller, and what
-   its quota / auth / timeout stderr messages look like (for
-   `driver_classify_error`).
-3. Keep quirk handling in the driver — the core must stay CLI-agnostic.
-4. Add stub-based tests in `tests/run-tests.sh` mirroring the existing driver tests.
+1. Add `scripts/drivers/<name>.sh` and a new `plugins/<name>-plugin/` (or extend
+   `_gen_plugins.py`).
+2. Register it in both marketplace files.
+3. Keep the plugin self-contained — installs copy only the plugin directory.

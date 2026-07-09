@@ -1,0 +1,36 @@
+{
+  "name": "grok-plugin",
+  "version": "0.4.0",
+  "description": "Routes high-volume work to Grok Build via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. Prefer when the task needs stronger reasoning than Gemini Flash; install agy-plugin for cheaper lower-intelligence bulk work.",
+  "author": {
+    "name": "zicjin",
+    "url": "https://github.com/zicjin"
+  },
+  "homepage": "https://github.com/zicjin/subvibe",
+  "repository": "https://github.com/zicjin/subvibe",
+  "license": "MIT",
+  "keywords": [
+    "grok",
+    "xai",
+    "subagent",
+    "delegation"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "grok-plugin — grok as a subagent for higher-intelligence bulk work",
+    "shortDescription": "grok as a subagent for higher-intelligence bulk work",
+    "longDescription": "Routes high-volume work to Grok Build via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. Prefer when the task needs stronger reasoning than Gemini Flash; install agy-plugin for cheaper lower-intelligence bulk work.",
+    "developerName": "zicjin",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/zicjin/subvibe",
+    "defaultPrompt": [
+      "Use grok-delegate to generate exhaustive unit tests for this module.",
+      "Use grok-research to run a cited multi-source research pass on this topic."
+    ]
+  }
+}

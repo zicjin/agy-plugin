@@ -11,6 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: shellcheck
-        run: shellcheck -S warning scripts/*.sh scripts/drivers/*.sh tests/run-tests.sh
+        run: |
+          shellcheck -S warning \
+            scripts/*.sh scripts/drivers/*.sh \
+            plugins/*/scripts/*.sh plugins/*/scripts/drivers/*.sh \
+            tests/run-tests.sh
+      - name: plugins match templates
+        run: |
+          python3 scripts/_gen_plugins.py
+          git diff --exit-code -- plugins/
       - name: tests
         run: bash tests/run-tests.sh

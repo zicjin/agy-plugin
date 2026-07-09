@@ -5,10 +5,22 @@
   },
   "plugins": [
     {
-      "name": "subvibe",
+      "name": "agy-plugin",
       "source": {
         "source": "local",
-        "path": "./"
+        "path": "./plugins/agy-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "grok-plugin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/grok-plugin"
       },
       "policy": {
         "installation": "AVAILABLE",

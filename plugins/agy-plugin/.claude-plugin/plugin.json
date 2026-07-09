@@ -1,0 +1,20 @@
+{
+  "name": "agy-plugin",
+  "version": "0.4.0",
+  "description": "Routes high-volume work to Antigravity/Gemini Flash via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. Prefer for lower-intelligence bulk work; install grok-plugin for stronger reasoning.",
+  "author": {
+    "name": "zicjin",
+    "url": "https://github.com/zicjin"
+  },
+  "homepage": "https://github.com/zicjin/subvibe",
+  "repository": "https://github.com/zicjin/subvibe",
+  "license": "MIT",
+  "keywords": [
+    "agy",
+    "antigravity",
+    "gemini",
+    "subagent",
+    "delegation"
+  ],
+  "hooks": "./hooks/claude-hooks.json"
+}
