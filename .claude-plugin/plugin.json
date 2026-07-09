@@ -1,7 +1,7 @@
 {
   "name": "subvibe",
   "version": "0.3.0",
-  "description": "Delegate well-scoped subtasks to the Antigravity CLI (agy / Gemini) as a cheap subagent, with cost discipline and verification gates. Claude conducts; agy executes.",
+  "description": "Delegate well-scoped subtasks to a cheap subagent CLI (Grok Build by default; Antigravity/Gemini included), with cost discipline and verification gates. Claude conducts; the executor CLI executes.",
   "author": {
     "name": "zicjin",
     "url": "https://github.com/zicjin"
@@ -9,6 +9,6 @@
   "homepage": "https://github.com/zicjin/subvibe",
   "repository": "https://github.com/zicjin/subvibe",
   "license": "MIT",
-  "keywords": ["antigravity", "agy", "gemini", "subagent", "delegation", "model-routing"],
+  "keywords": ["grok", "antigravity", "agy", "gemini", "subagent", "delegation", "model-routing"],
   "hooks": "./hooks/claude-hooks.json"
 }

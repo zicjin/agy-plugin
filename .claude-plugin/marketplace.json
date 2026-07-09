@@ -1,17 +1,17 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "subvibe",
-  "description": "Use the Antigravity CLI (agy / Gemini) as a cheap subagent with cost discipline and verification gates.",
+  "description": "Use a cheap subagent CLI (Grok Build by default; Antigravity/Gemini included) with cost discipline and verification gates.",
   "owner": {
     "name": "zicjin"
   },
   "plugins": [
     {
       "name": "subvibe",
-      "description": "Routes deterministic, high-volume work (scaffolding, test generation, migrations, bulk reads, web research) to the Antigravity CLI (agy / Gemini) via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. The conductor keeps the judgement-heavy 20%.",
+      "description": "Routes deterministic, high-volume work (scaffolding, test generation, migrations, bulk reads, web research) to a cheaper subagent CLI (Grok Build by default; Antigravity/Gemini included) via a hardened driver-based wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. The conductor keeps the judgement-heavy 20%.",
       "source": "./",
       "category": "ai",
-      "keywords": ["antigravity", "gemini", "multi-agent", "sdlc", "model-routing"]
+      "keywords": ["grok", "antigravity", "gemini", "multi-agent", "sdlc", "model-routing"]
     }
   ]
 }
