@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# doctor.sh — read-only health check for agy-plugin (Antigravity delegation plugin).
+# doctor.sh — read-only health check for subvibe (Antigravity delegation plugin).
 # Verifies the agy CLI is installed + authenticated and the plugin is wired up
 # (scripts executable).
 #

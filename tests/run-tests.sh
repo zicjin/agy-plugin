@@ -234,7 +234,7 @@ out=$(py_ok <<'PY'
 import json, os, sys
 root = os.environ["ROOT"]
 m = json.load(open(os.path.join(root, ".codex-plugin", "plugin.json")))
-assert m["name"] == "agy-plugin", "manifest name"
+assert m["name"] == "subvibe", "manifest name"
 assert m["version"], "manifest version"
 for f in ("skills", "hooks"):
     p = m[f]
@@ -250,7 +250,7 @@ import json, os
 root = os.environ["ROOT"]
 m = json.load(open(os.path.join(root, ".agents", "plugins", "marketplace.json")))
 e = m["plugins"][0]
-assert e["name"] == "agy-plugin"
+assert e["name"] == "subvibe"
 p = e["source"]["path"]
 assert p.startswith("./")
 assert os.path.exists(os.path.join(root, p, ".codex-plugin", "plugin.json")), "source.path has no manifest"
@@ -275,7 +275,7 @@ out=$(py_ok <<'PY'
 import json, os
 root = os.environ["ROOT"]
 m = json.load(open(os.path.join(root, ".claude-plugin", "plugin.json")))
-assert m["name"] == "agy-plugin", "claude manifest name"
+assert m["name"] == "subvibe", "claude manifest name"
 assert m["version"], "claude manifest version"
 hp = m["hooks"]
 assert hp.startswith("./") and os.path.exists(os.path.join(root, hp)), "claude hooks path"
@@ -287,7 +287,7 @@ for g in h["hooks"]["SessionStart"]:
     assert "AGENTS-snippet.md" in cmd and "${CLAUDE_PLUGIN_ROOT}" in cmd
 mk = json.load(open(os.path.join(root, ".claude-plugin", "marketplace.json")))
 e = mk["plugins"][0]
-assert e["name"] == "agy-plugin" and e["source"] == "./"
+assert e["name"] == "subvibe" and e["source"] == "./"
 print("CLAUDE_OK")
 PY
 ); rc=$?
