@@ -141,11 +141,13 @@ echo "== grok driver =="
 cp "$TMP/bin/agy" "$TMP/bin/grok"; chmod +x "$TMP/bin/grok"
 
 out=$(STUB_MODE=args "$DELEGATE" --driver grok "hi" 2>/dev/null); rc=$?
-check "grok: default -> grok-build + medium effort" 0 "$rc" "--model grok-build --reasoning-effort medium" "$out"
+check "grok: default -> grok-4.5 + medium effort" 0 "$rc" "--model grok-4.5 --reasoning-effort medium" "$out"
 out=$(STUB_MODE=args "$DELEGATE" --driver grok --tier high "hi" 2>/dev/null); rc=$?
 check "grok: --tier high -> --reasoning-effort high" 0 "$rc" "--reasoning-effort high" "$out"
-out=$(STUB_MODE=args GROK_TIER_HIGH="grok-4.5" "$DELEGATE" --driver grok --tier high "hi" 2>/dev/null); rc=$?
-check "grok: GROK_TIER_HIGH remap respected" 0 "$rc" "--model grok-4.5" "$out"
+out=$(STUB_MODE=args "$DELEGATE" --driver grok --tier low "hi" 2>/dev/null); rc=$?
+check "grok: --tier low -> composer model, no effort flag" 0 "$rc" "--model grok-composer-2.5-fast -p" "$out"
+out=$(STUB_MODE=args GROK_TIER_HIGH="my-model" "$DELEGATE" --driver grok --tier high "hi" 2>/dev/null); rc=$?
+check "grok: GROK_TIER_HIGH remap respected" 0 "$rc" "--model my-model" "$out"
 out=$(STUB_MODE=args "$DELEGATE" --driver grok --yolo --sandbox -c --conversation abc123 --dir /tmp/w "hi" 2>/dev/null); rc=$?
 check "grok: yolo -> --always-approve" 0 "$rc" "--always-approve" "$out"
 check "grok: sandbox -> readonly profile" 0 "$rc" "--sandbox readonly" "$out"

@@ -25,7 +25,7 @@ Available drivers:
 | driver | CLI | tier mapping |
 | --- | --- | --- |
 | `agy` (default) | Antigravity CLI | tier → Gemini Flash thinking-level model names (`AGY_TIER_*`) |
-| `grok` | Grok Build (x.ai/cli) | tier → `--reasoning-effort low\|medium\|high` on `grok-build` (`GROK_TIER_*`) |
+| `grok` | Grok Build (x.ai/cli) | low → `grok-composer-2.5-fast`; medium/high → `grok-4.5` + `--reasoning-effort` (`GROK_TIER_*`) |
 
 ## Driver interface
 

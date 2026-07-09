@@ -7,8 +7,9 @@
 #
 # Flag mapping (verified against grok 0.2.93 `--help`):
 #   prompt        -> -p/--single <PROMPT>   (takes the prompt as its value, last)
-#   tier          -> --reasoning-effort low|medium|high (model stays `grok-build`
-#                    unless remapped via GROK_TIER_* / --model)
+#   tier          -> low = grok-composer-2.5-fast (cheap composer model);
+#                    medium/high = grok-4.5 + --reasoning-effort medium|high
+#                    (remap via GROK_TIER_* / --model; see `grok models`)
 #   --dir         -> --cwd <dir>  (grok takes ONE working dir; extras are warned about)
 #   --yolo        -> --always-approve
 #   --sandbox     -> --sandbox <profile>  (default `readonly`; env GROK_SANDBOX_PROFILE)
@@ -28,22 +29,26 @@ DRIVER_BIN="grok"
 # shellcheck disable=SC2034
 DRIVER_INSTALL_HINT="install Grok Build: curl -fsSL https://x.ai/cli/install.sh | bash"
 
-# Tiers map to reasoning effort on grok's default coding model (`grok-build`),
-# not to different model IDs. Each tier's model is still remappable to any
-# `grok models` entry via env vars.
+# Tier defaults verified against a live subscriber account (`grok models`):
+# grok-4.5 (default, supports --reasoning-effort) and grok-composer-2.5-fast
+# (fast composer model; ignores effort with a warning). Note the unauthenticated
+# CLI advertises a `grok-build` model id that real accounts REJECT. Each tier
+# is remappable to any `grok models` entry via env vars.
 driver_model_for_tier() {
   case "$1" in
-    low)    echo "${GROK_TIER_LOW:-grok-build}" ;;
-    medium) echo "${GROK_TIER_MEDIUM:-grok-build}" ;;
-    high)   echo "${GROK_TIER_HIGH:-grok-build}" ;;
+    low)    echo "${GROK_TIER_LOW:-grok-composer-2.5-fast}" ;;
+    medium) echo "${GROK_TIER_MEDIUM:-grok-4.5}" ;;
+    high)   echo "${GROK_TIER_HIGH:-grok-4.5}" ;;
     *) return 1 ;;
   esac
 }
 
 driver_build_args() {
   DRIVER_ARGS=(--model "$MODEL")
+  # Effort only differentiates tiers on models that support it; composer models
+  # ignore it with a warning, so passing it is harmless.
   case "$TIER" in
-    low|medium|high) DRIVER_ARGS+=(--reasoning-effort "$TIER") ;;
+    medium|high) DRIVER_ARGS+=(--reasoning-effort "$TIER") ;;
   esac
   # grok takes a single working directory (--cwd), not repeatable add-dirs.
   local d first=""

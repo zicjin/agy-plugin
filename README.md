@@ -163,7 +163,7 @@ Configuration is plain env vars (`AGY_*`) on both platforms.
 | driver | executor | tiers map to | notes |
 |---|---|---|---|
 | `agy` (default) | [Antigravity CLI](https://antigravity.google/docs/cli-using) | Gemini Flash thinking levels (`AGY_TIER_*` remaps) | see Known limits above |
-| `grok` | [Grok Build](https://x.ai/cli) (`grok`) | `--reasoning-effort low\|medium\|high` on `grok-build` (`GROK_TIER_*` remaps) | `--dir`→`--cwd` (one dir) · `--yolo`→`--always-approve` · `--sandbox` uses profile `GROK_SANDBOX_PROFILE` (default `readonly`) · unauthenticated headless `grok -p` hangs — the wall-clock guard catches it; run `grok login` |
+| `grok` | [Grok Build](https://x.ai/cli) (`grok`) | low→`grok-composer-2.5-fast`, medium/high→`grok-4.5` + `--reasoning-effort` (`GROK_TIER_*` remaps) | `--dir`→`--cwd` (one dir) · `--yolo`→`--always-approve` · `--sandbox` uses profile `GROK_SANDBOX_PROFILE` (default `readonly`) · unauthenticated headless `grok -p` hangs — the wall-clock guard catches it; run `grok login` |
 
 ```bash
 AGY_DRIVER=grok agy-delegate --tier high "task"   # or: agy-delegate --driver grok ...
