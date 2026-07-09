@@ -8,7 +8,7 @@ reads the same AGENTS.md, one shared harness for all the AIs involved.
 
 You (the conductor agent) can delegate work to the **Antigravity CLI (`agy`, Gemini)** — a full
 terminal agent (file edits, terminal, subagents, web/Vertex AI Search) — via the
-`agy-delegate` wrapper (from agy-plugin; `agy-job` for background jobs,
+`agy-delegate` wrapper (from subvibe; `agy-job` for background jobs,
 `agy-doctor` for health checks — these are `scripts/agy-delegate.sh`,
 `scripts/agy-job.sh`, and `scripts/doctor.sh` in the installed plugin, invoked by
 path). The organizing idea is **intelligent model routing

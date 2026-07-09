@@ -1,6 +1,6 @@
 ---
 name: agy-setup
-description: Verify the Antigravity (agy) CLI is installed and authenticated and the agy-plugin tooling is ready to use. Use when setting up, or when agy delegations fail with auth/missing errors.
+description: Verify the Antigravity (agy) CLI is installed and authenticated and the subvibe tooling is ready to use. Use when setting up, or when agy delegations fail with auth/missing errors.
 ---
 
 Run the plugin's doctor and report status.

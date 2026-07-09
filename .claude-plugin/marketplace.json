@@ -1,13 +1,13 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "agy-plugin",
+  "name": "subvibe",
   "description": "Use the Antigravity CLI (agy / Gemini) as a cheap subagent with cost discipline and verification gates.",
   "owner": {
     "name": "zicjin"
   },
   "plugins": [
     {
-      "name": "agy-plugin",
+      "name": "subvibe",
       "description": "Routes deterministic, high-volume work (scaffolding, test generation, migrations, bulk reads, web research) to the Antigravity CLI (agy / Gemini) via a hardened wrapper with tiers, background jobs, structured failure codes, digest guards, and verification gates. The conductor keeps the judgement-heavy 20%.",
       "source": "./",
       "category": "ai",

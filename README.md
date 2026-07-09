@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛰️ Antigravity delegation plugin (`agy-plugin`)
+# 🛰️ Antigravity delegation plugin (`subvibe`)
 
 **Run the Antigravity CLI (Gemini) as a collaborating sub-agent, right inside OpenAI Codex or Claude Code.**
 
@@ -40,16 +40,16 @@ you → Codex / Claude Code (conduct: design / verify / review)
 ### Codex
 
 ```bash
-codex plugin marketplace add zicjin/agy-plugin
+codex plugin marketplace add zicjin/subvibe
 ```
 
-Then inside Codex run `/plugins`, pick the **Antigravity (agy) delegation** marketplace, and install **agy-plugin**.
+Then inside Codex run `/plugins`, pick the **Antigravity (agy) delegation** marketplace, and install **subvibe**.
 
 ### Claude Code
 
 ```
-/plugin marketplace add zicjin/agy-plugin
-/plugin install agy-plugin@agy-plugin
+/plugin marketplace add zicjin/subvibe
+/plugin install subvibe@subvibe
 ```
 
 Both give you:
@@ -125,9 +125,9 @@ ID=$(agy-job start --tier high --dir . "big task"); agy-job result "$ID"
 
 ```
 .codex-plugin/plugin.json        Codex plugin manifest
-.agents/plugins/marketplace.json Codex repo marketplace (codex plugin marketplace add zicjin/agy-plugin)
+.agents/plugins/marketplace.json Codex repo marketplace (codex plugin marketplace add zicjin/subvibe)
 .claude-plugin/plugin.json       Claude Code plugin manifest
-.claude-plugin/marketplace.json  Claude Code marketplace (/plugin marketplace add zicjin/agy-plugin)
+.claude-plugin/marketplace.json  Claude Code marketplace (/plugin marketplace add zicjin/subvibe)
 skills/                          shared plugin skills: agy-delegate, agy-research, agy-jobs, agy-setup, agy-prompting
 hooks/hooks.json                 Codex SessionStart hook — injects the delegation policy as session context
 hooks/claude-hooks.json          Claude Code SessionStart hook (startup + compact) — same policy injection

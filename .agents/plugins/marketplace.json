@@ -1,11 +1,11 @@
 {
-  "name": "agy-plugin",
+  "name": "subvibe",
   "interface": {
     "displayName": "Antigravity (agy) delegation"
   },
   "plugins": [
     {
-      "name": "agy-plugin",
+      "name": "subvibe",
       "source": {
         "source": "local",
         "path": "./"

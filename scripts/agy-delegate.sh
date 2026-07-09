@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # agy-delegate.sh — robust headless delegation wrapper for subagent CLIs.
-# Part of the "agy-plugin" project (subagent delegation plugin for Codex / Claude Code).
+# Part of the "subvibe" project (subagent delegation plugin for Codex / Claude Code).
 #
 # Purpose: let the conductor agent hand a single, well-scoped subtask to a
 # cheaper subagent CLI (default: Antigravity `agy`) and get clean text back on

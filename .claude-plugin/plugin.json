@@ -1,13 +1,13 @@
 {
-  "name": "agy-plugin",
+  "name": "subvibe",
   "version": "0.3.0",
   "description": "Delegate well-scoped subtasks to the Antigravity CLI (agy / Gemini) as a cheap subagent, with cost discipline and verification gates. Claude conducts; agy executes.",
   "author": {
     "name": "zicjin",
     "url": "https://github.com/zicjin"
   },
-  "homepage": "https://github.com/zicjin/agy-plugin",
-  "repository": "https://github.com/zicjin/agy-plugin",
+  "homepage": "https://github.com/zicjin/subvibe",
+  "repository": "https://github.com/zicjin/subvibe",
   "license": "MIT",
   "keywords": ["antigravity", "agy", "gemini", "subagent", "delegation", "model-routing"],
   "hooks": "./hooks/claude-hooks.json"
