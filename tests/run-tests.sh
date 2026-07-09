@@ -25,6 +25,7 @@ case "${STUB_MODE:-text}" in
   args)    printf '%s\n' "$*" ;;      # echo args for assertions
   quota)   echo "Error: quota exceeded for this model" >&2; exit 1 ;;     # -> wrapper exit 10
   auth)    echo "Error: request is unauthenticated; please sign in" >&2; exit 1 ;; # -> exit 11
+  auth2)   echo "You are not authenticated." >&2; exit 1 ;;                        # grok-style -> exit 11
   timeout) echo "Error: deadline exceeded (the request timed out)" >&2; exit 1 ;;  # -> exit 12
   big)     printf 'x%.0s' $(seq 1 20000); echo ;;    # dump-sized reply -> digest guard warns
   *)       echo "STUB_OK" ;;
@@ -134,6 +135,28 @@ out=$(AGY_DRIVER=bogus "$DELEGATE" "hi" 2>&1); rc=$?
 check "AGY_DRIVER=bogus -> exit 1" 1 "$rc" "unknown driver" "$out"
 out=$(STUB_MODE=args AGY_DRIVER=agy "$DELEGATE" "hi" 2>/dev/null); rc=$?
 check "AGY_DRIVER=agy -> works" 0 "$rc" "-p" "$out"
+
+echo "== grok driver =="
+# stub `grok` too (same STUB_MODE contract as the agy stub)
+cp "$TMP/bin/agy" "$TMP/bin/grok"; chmod +x "$TMP/bin/grok"
+
+out=$(STUB_MODE=args "$DELEGATE" --driver grok "hi" 2>/dev/null); rc=$?
+check "grok: default -> grok-build + medium effort" 0 "$rc" "--model grok-build --reasoning-effort medium" "$out"
+out=$(STUB_MODE=args "$DELEGATE" --driver grok --tier high "hi" 2>/dev/null); rc=$?
+check "grok: --tier high -> --reasoning-effort high" 0 "$rc" "--reasoning-effort high" "$out"
+out=$(STUB_MODE=args GROK_TIER_HIGH="grok-4.5" "$DELEGATE" --driver grok --tier high "hi" 2>/dev/null); rc=$?
+check "grok: GROK_TIER_HIGH remap respected" 0 "$rc" "--model grok-4.5" "$out"
+out=$(STUB_MODE=args "$DELEGATE" --driver grok --yolo --sandbox -c --conversation abc123 --dir /tmp/w "hi" 2>/dev/null); rc=$?
+check "grok: yolo -> --always-approve" 0 "$rc" "--always-approve" "$out"
+check "grok: sandbox -> readonly profile" 0 "$rc" "--sandbox readonly" "$out"
+check "grok: continue + conversation -> --continue --resume" 0 "$rc" "--continue --resume abc123" "$out"
+check "grok: --dir -> --cwd" 0 "$rc" "--cwd /tmp/w" "$out"
+out=$(STUB_MODE=args "$DELEGATE" --driver grok --dir /a --dir /b --print-command "hi" 2>&1); rc=$?
+check "grok: second --dir warned + ignored" 0 "$rc" "ignoring extra --dir" "$out"
+out=$(STUB_MODE=auth2 "$DELEGATE" --driver grok "hi" 2>&1); rc=$?
+check "grok: auth stderr -> exit 11 + signal" 11 "$rc" "AUTH_REQUIRED" "$out"
+out=$(PATH="/usr/bin:/bin" "$DELEGATE" --driver grok "hi" 2>&1); rc=$?
+check "grok: missing binary -> exit 13 + install hint" 13 "$rc" "x.ai/cli/install.sh" "$out"
 
 # agy missing on PATH -> exit 13 + AGY_MISSING signal (PATH without the stub or real agy)
 out=$(PATH="/usr/bin:/bin" "$DELEGATE" "hi" 2>&1); rc=$?

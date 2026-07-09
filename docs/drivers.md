@@ -20,7 +20,12 @@ agy-delegate.sh --driver agy "task"     # per call
 export AGY_DRIVER=agy                    # default for all calls
 ```
 
-`agy` is the default and currently the only driver.
+Available drivers:
+
+| driver | CLI | tier mapping |
+| --- | --- | --- |
+| `agy` (default) | Antigravity CLI | tier → Gemini Flash thinking-level model names (`AGY_TIER_*`) |
+| `grok` | Grok Build (x.ai/cli) | tier → `--reasoning-effort low\|medium\|high` on `grok-build` (`GROK_TIER_*`) |
 
 ## Driver interface
 
@@ -40,8 +45,8 @@ define:
 | `driver_hang_hint` | extra stderr hint when the wall-clock guard killed the CLI |
 
 Normalized inputs the core sets before calling driver functions (read-only):
-`MODEL` `TIMEOUT` `ADD_DIRS[]` `YOLO` `SANDBOX` `CONTINUE` `CONV_ID` `PROMPT`
-`PRINT_CMD`. Helpers available: `on_wsl`, `on_windows_native`.
+`MODEL` `TIER` `TIMEOUT` `ADD_DIRS[]` `YOLO` `SANDBOX` `CONTINUE` `CONV_ID`
+`PROMPT` `PRINT_CMD`. Helpers available: `on_wsl`, `on_windows_native`.
 
 The invocation the core runs is:
 
@@ -51,12 +56,12 @@ $DRIVER_BIN "${DRIVER_ARGS[@]}" "${DRIVER_PROMPT_ARGS[@]}" < /dev/null
 
 wrapped in a wall-clock `timeout` guard when available.
 
-## Adding a new driver (e.g. grok, devin)
+## Adding a new driver (e.g. devin)
 
-1. Copy `drivers/agy.sh` to `drivers/<name>.sh` and map the flags. Both grok
-   and Devin CLI are the same shape as agy (local headless coding CLIs:
-   prompt in, stdout out) — e.g. Devin CLI: `-p` single-turn, `--continue` /
-   `--resume <id>`, `--permission-mode bypass` for yolo, `--sandbox`.
+1. Copy `drivers/agy.sh` or `drivers/grok.sh` to `drivers/<name>.sh` and map
+   the flags. Devin CLI is the same shape (local headless coding CLI: prompt
+   in, stdout out): `-p` single-turn, `--continue` / `--resume <id>`,
+   `--permission-mode bypass` for yolo, `--sandbox`.
 2. Verify the CLI's headless behavior empirically before shipping: exact
    `--model`-style flag, whether stdout survives a non-TTY caller, and what
    its quota / auth / timeout stderr messages look like (for
