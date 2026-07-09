@@ -131,8 +131,9 @@ ID=$(agy-job start --tier high --dir . "big task"); agy-job result "$ID"
 skills/                          shared plugin skills: agy-delegate, agy-research, agy-jobs, agy-setup, agy-prompting
 hooks/hooks.json                 Codex SessionStart hook — injects the delegation policy as session context
 hooks/claude-hooks.json          Claude Code SessionStart hook (startup + compact) — same policy injection
-scripts/                         agy-delegate.sh · agy-job.sh · doctor.sh
+scripts/                         agy-delegate.sh (CLI-agnostic core) · drivers/ (per-CLI drivers) · agy-job.sh · doctor.sh
 docs/AGENTS-snippet.md           the routing policy + verification gates (injected by the hook)
+docs/drivers.md                  the driver interface — how to add another subagent CLI
 tests/                           dependency-free tests (stub agy); bash tests/run-tests.sh
 ```
 
@@ -154,3 +155,7 @@ The core is platform-neutral — pure-bash scripts, open-format `SKILL.md` skill
 | scripts | `scripts/` (shared, invoked by path) | `scripts/` (shared, invoked by path) |
 
 Configuration is plain env vars (`AGY_*`) on both platforms.
+
+## Driver architecture
+
+`scripts/agy-delegate.sh` is a CLI-agnostic core; everything specific to one subagent CLI lives in a driver (`scripts/drivers/<name>.sh`). The core owns cost discipline, the hang guard, structured exit codes, and the `AGY_SIGNAL` failure contract; the driver owns flag mapping, tier→model names, and error classification. `agy` is the default (and currently only) driver — select with `--driver` or `AGY_DRIVER`. Adding another local headless coding CLI (grok, Devin CLI, …) means writing one driver file: see [docs/drivers.md](docs/drivers.md).

@@ -125,6 +125,16 @@ check "invalid env tier -> falls back to medium" 0 "$rc" "Gemini 3.5 Flash (Medi
 out=$("$DELEGATE" --tier bogus "hi" 2>/dev/null); rc=$?
 check "explicit --tier bogus -> exit 1" 1 "$rc"
 
+# driver selection: agy is the default; unknown drivers fail with usage error
+out=$(STUB_MODE=args "$DELEGATE" --driver agy "hi" 2>/dev/null); rc=$?
+check "--driver agy -> same as default" 0 "$rc" "Gemini 3.5 Flash (Medium)" "$out"
+out=$("$DELEGATE" --driver bogus "hi" 2>&1); rc=$?
+check "--driver bogus -> exit 1 + lists available" 1 "$rc" "unknown driver" "$out"
+out=$(AGY_DRIVER=bogus "$DELEGATE" "hi" 2>&1); rc=$?
+check "AGY_DRIVER=bogus -> exit 1" 1 "$rc" "unknown driver" "$out"
+out=$(STUB_MODE=args AGY_DRIVER=agy "$DELEGATE" "hi" 2>/dev/null); rc=$?
+check "AGY_DRIVER=agy -> works" 0 "$rc" "-p" "$out"
+
 # agy missing on PATH -> exit 13 + AGY_MISSING signal (PATH without the stub or real agy)
 out=$(PATH="/usr/bin:/bin" "$DELEGATE" "hi" 2>&1); rc=$?
 check "agy missing -> exit 13 + AGY_MISSING signal" 13 "$rc" "AGY_MISSING" "$out"
