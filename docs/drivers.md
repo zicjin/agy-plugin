@@ -16,16 +16,20 @@ driver-agnostic for free — it only consumes the core's exit codes and signals.
 ## Selecting a driver
 
 ```bash
-agy-delegate.sh --driver agy "task"     # per call
-export AGY_DRIVER=agy                    # default for all calls
+agy-delegate.sh --driver agy "task"   # per call
+export SUBVIBE_DRIVER=agy             # session/global default for all calls
 ```
+
+The built-in default (used when neither `--driver` nor `SUBVIBE_DRIVER` is
+set) is `grok`, defined in one place: the `DRIVER="${SUBVIBE_DRIVER:-grok}"`
+line near the top of `scripts/agy-delegate.sh`.
 
 Available drivers:
 
 | driver | CLI | tier mapping |
 | --- | --- | --- |
-| `agy` (default) | Antigravity CLI | tier → Gemini Flash thinking-level model names (`AGY_TIER_*`) |
-| `grok` | Grok Build (x.ai/cli) | low → `grok-composer-2.5-fast`; medium/high → `grok-4.5` + `--reasoning-effort` (`GROK_TIER_*`) |
+| `agy` | Antigravity CLI | tier → Gemini Flash thinking-level model names (`AGY_TIER_*`) |
+| `grok` (default) | Grok Build (x.ai/cli) | low → `grok-composer-2.5-fast`; medium/high → `grok-4.5` + `--reasoning-effort` (`GROK_TIER_*`) |
 
 ## Driver interface
 

@@ -43,6 +43,9 @@ check() { # desc  expected_rc  actual_rc  [substr]  [actual_out]
 }
 
 echo "== agy-delegate.sh =="
+# The shipped default driver is grok; this section exercises the CLI-agnostic
+# core through the agy driver, so pin it for these tests.
+export SUBVIBE_DRIVER=agy
 
 out=$(STUB_MODE=text "$DELEGATE" "hello" 2>/dev/null); rc=$?
 check "normal text passes through" 0 "$rc" "STUB_OK" "$out"
@@ -126,19 +129,22 @@ check "invalid env tier -> falls back to medium" 0 "$rc" "Gemini 3.5 Flash (Medi
 out=$("$DELEGATE" --tier bogus "hi" 2>/dev/null); rc=$?
 check "explicit --tier bogus -> exit 1" 1 "$rc"
 
-# driver selection: agy is the default; unknown drivers fail with usage error
+# driver selection: unknown drivers fail with usage error
 out=$(STUB_MODE=args "$DELEGATE" --driver agy "hi" 2>/dev/null); rc=$?
-check "--driver agy -> same as default" 0 "$rc" "Gemini 3.5 Flash (Medium)" "$out"
+check "--driver agy -> agy model names" 0 "$rc" "Gemini 3.5 Flash (Medium)" "$out"
 out=$("$DELEGATE" --driver bogus "hi" 2>&1); rc=$?
 check "--driver bogus -> exit 1 + lists available" 1 "$rc" "unknown driver" "$out"
-out=$(AGY_DRIVER=bogus "$DELEGATE" "hi" 2>&1); rc=$?
-check "AGY_DRIVER=bogus -> exit 1" 1 "$rc" "unknown driver" "$out"
-out=$(STUB_MODE=args AGY_DRIVER=agy "$DELEGATE" "hi" 2>/dev/null); rc=$?
-check "AGY_DRIVER=agy -> works" 0 "$rc" "-p" "$out"
+out=$(SUBVIBE_DRIVER=bogus "$DELEGATE" "hi" 2>&1); rc=$?
+check "SUBVIBE_DRIVER=bogus -> exit 1" 1 "$rc" "unknown driver" "$out"
+out=$(STUB_MODE=args SUBVIBE_DRIVER=agy "$DELEGATE" "hi" 2>/dev/null); rc=$?
+check "SUBVIBE_DRIVER=agy -> works" 0 "$rc" "-p" "$out"
 
 echo "== grok driver =="
 # stub `grok` too (same STUB_MODE contract as the agy stub)
 cp "$TMP/bin/agy" "$TMP/bin/grok"; chmod +x "$TMP/bin/grok"
+
+out=$(STUB_MODE=args env -u SUBVIBE_DRIVER "$DELEGATE" "hi" 2>/dev/null); rc=$?
+check "default driver (no env/flag) -> grok" 0 "$rc" "--model grok-4.5" "$out"
 
 out=$(STUB_MODE=args "$DELEGATE" --driver grok "hi" 2>/dev/null); rc=$?
 check "grok: default -> grok-4.5 + medium effort" 0 "$rc" "--model grok-4.5 --reasoning-effort medium" "$out"

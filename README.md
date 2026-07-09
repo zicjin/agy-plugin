@@ -158,13 +158,15 @@ Configuration is plain env vars (`AGY_*`) on both platforms.
 
 ## Driver architecture
 
-`scripts/agy-delegate.sh` is a CLI-agnostic core; everything specific to one subagent CLI lives in a driver (`scripts/drivers/<name>.sh`). The core owns cost discipline, the hang guard, structured exit codes, and the `AGY_SIGNAL` failure contract; the driver owns flag mapping, tier→model names, and error classification. Select with `--driver` or `AGY_DRIVER`. Adding another local headless coding CLI (Devin CLI, …) means writing one driver file: see [docs/drivers.md](docs/drivers.md).
+`scripts/agy-delegate.sh` is a CLI-agnostic core; everything specific to one subagent CLI lives in a driver (`scripts/drivers/<name>.sh`). The core owns cost discipline, the hang guard, structured exit codes, and the `AGY_SIGNAL` failure contract; the driver owns flag mapping, tier→model names, and error classification. Select with `--driver` or `SUBVIBE_DRIVER`. Adding another local headless coding CLI (Devin CLI, …) means writing one driver file: see [docs/drivers.md](docs/drivers.md).
 
 | driver | executor | tiers map to | notes |
 |---|---|---|---|
-| `agy` (default) | [Antigravity CLI](https://antigravity.google/docs/cli-using) | Gemini Flash thinking levels (`AGY_TIER_*` remaps) | see Known limits above |
-| `grok` | [Grok Build](https://x.ai/cli) (`grok`) | low→`grok-composer-2.5-fast`, medium/high→`grok-4.5` + `--reasoning-effort` (`GROK_TIER_*` remaps) | `--dir`→`--cwd` (one dir) · `--yolo`→`--always-approve` · `--sandbox` uses profile `GROK_SANDBOX_PROFILE` (default `readonly`) · unauthenticated headless `grok -p` hangs — the wall-clock guard catches it; run `grok login` |
+| `agy` | [Antigravity CLI](https://antigravity.google/docs/cli-using) | Gemini Flash thinking levels (`AGY_TIER_*` remaps) | see Known limits above |
+| `grok` (default) | [Grok Build](https://x.ai/cli) (`grok`) | low→`grok-composer-2.5-fast`, medium/high→`grok-4.5` + `--reasoning-effort` (`GROK_TIER_*` remaps) | `--dir`→`--cwd` (one dir) · `--yolo`→`--always-approve` · `--sandbox` uses profile `GROK_SANDBOX_PROFILE` (default `readonly`) · unauthenticated headless `grok -p` hangs — the wall-clock guard catches it; run `grok login` |
 
 ```bash
-AGY_DRIVER=grok agy-delegate --tier high "task"   # or: agy-delegate --driver grok ...
+SUBVIBE_DRIVER=agy agy-delegate --tier high "task"   # or: agy-delegate --driver agy ...
 ```
+
+The built-in default is `grok` — one line in `scripts/agy-delegate.sh` (`DRIVER="${SUBVIBE_DRIVER:-grok}"`); override per call with `--driver` or persistently by exporting `SUBVIBE_DRIVER` (e.g. in your shell profile).

@@ -3,7 +3,7 @@
 # drivers/grok.sh — Grok Build CLI (`grok`, x.ai/cli) driver for agy-delegate.sh.
 #
 # Sourced (not executed) by scripts/agy-delegate.sh. See docs/drivers.md for
-# the driver interface. Select with `--driver grok` or `AGY_DRIVER=grok`.
+# the driver interface. Select with `--driver grok` or `SUBVIBE_DRIVER=grok`.
 #
 # Flag mapping (verified against grok 0.2.93 `--help`):
 #   prompt        -> -p/--single <PROMPT>   (takes the prompt as its value, last)

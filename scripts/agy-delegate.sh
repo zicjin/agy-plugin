@@ -31,7 +31,7 @@
 #   -c, --continue                   Resume the most recent conversation (stateful)
 #       --conversation <id>          Resume a specific conversation by ID (stateful)
 #   -m, --model <exact name>         Use an exact model name (any the CLI lists)
-#       --driver <name>              Subagent CLI driver (default: agy; env AGY_DRIVER)
+#       --driver <name>              Subagent CLI driver (default: grok; env SUBVIBE_DRIVER)
 #       --print-command              Print the resolved command and exit (dry run)
 #   -h, --help                       Show this help
 #
@@ -42,7 +42,7 @@
 #   AGY_SIGNAL {"status":"QUOTA_EXHAUSTED","reason":"...","model":"...","retry":"--continue"}
 #
 # Tiers map to driver-specific model names (agy: Gemini Flash thinking levels),
-# remappable per tier. Defaults via env: AGY_DRIVER, AGY_DEFAULT_TIER, _TIMEOUT,
+# remappable per tier. Defaults via env: SUBVIBE_DRIVER, AGY_DEFAULT_TIER, _TIMEOUT,
 # _DEFAULT_MODEL (exact name), and per-tier remaps _TIER_LOW / _TIER_MEDIUM /
 # _TIER_HIGH. Explicit --model/--tier win.
 #
@@ -54,7 +54,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck disable=SC2034
 TIER="${AGY_DEFAULT_TIER:-medium}"
 TIMEOUT="${AGY_TIMEOUT:-5m}"
-DRIVER="${AGY_DRIVER:-agy}"
+DRIVER="${SUBVIBE_DRIVER:-grok}"
 TIER_EXPLICIT=0
 MODEL=""
 YOLO=0
