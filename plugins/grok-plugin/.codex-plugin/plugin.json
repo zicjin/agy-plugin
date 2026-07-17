@@ -16,7 +16,7 @@
     "delegation"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks.json",
+  "hooks": "./hooks/codex-hooks.json",
   "interface": {
     "displayName": "grok-plugin — grok as a subagent for higher-intelligence bulk work",
     "shortDescription": "grok as a subagent for higher-intelligence bulk work",
