@@ -155,5 +155,5 @@ python scripts/_gen_plugins.py
 |             | Codex | Claude Code |
 | ----------- | ----- | ----------- |
 | marketplace | `.agents/plugins/marketplace.json` | `.claude-plugin/marketplace.json` |
-| each plugin | `plugins/*/.codex-plugin/plugin.json` + `hooks/hooks.json` | `plugins/*/.claude-plugin/plugin.json` + `hooks/claude-hooks.json` |
+| each plugin | `plugins/*/.codex-plugin/plugin.json` + `hooks/codex-hooks.json` | `plugins/*/.claude-plugin/plugin.json` + `hooks/claude-hooks.json` |
 | skills/scripts | per-plugin, self-contained | per-plugin, self-contained |

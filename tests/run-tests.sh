@@ -214,13 +214,21 @@ assert not os.path.exists(os.path.join(root, ".claude-plugin", "plugin.json"))
 # Per-plugin hooks + snippet
 for plug in ("agy-plugin", "grok-plugin"):
     base = os.path.join(root, "plugins", plug)
-    h = json.load(open(os.path.join(base, "hooks", "hooks.json")))
+    default_hook = os.path.join(base, "hooks", "hooks.json")
+    assert not os.path.exists(default_hook), f"Claude auto-discovers Codex hook: {default_hook}"
+
+    codex = json.load(open(os.path.join(base, ".codex-plugin", "plugin.json")))
+    assert codex["hooks"] == "./hooks/codex-hooks.json"
+    h = json.load(open(os.path.join(base, codex["hooks"][2:])))
     cmd = h["hooks"]["SessionStart"][0]["hooks"][0]["command"]
     assert "AGENTS-snippet.md" in cmd and "${PLUGIN_ROOT}" in cmd
     assert os.path.exists(os.path.join(base, "docs", "AGENTS-snippet.md"))
+
     ch = json.load(open(os.path.join(base, "hooks", "claude-hooks.json")))
     matchers = [g["matcher"] for g in ch["hooks"]["SessionStart"]]
     assert "startup" in matchers and "compact" in matchers
+    commands = [hook["command"] for group in ch["hooks"]["SessionStart"] for hook in group["hooks"]]
+    assert all("${CLAUDE_PLUGIN_ROOT}" in command for command in commands)
     # fixed driver constants present
     dscript = "agy-delegate.sh" if plug.startswith("agy") else "grok-delegate.sh"
     body = open(os.path.join(base, "scripts", dscript), encoding="utf-8").read()

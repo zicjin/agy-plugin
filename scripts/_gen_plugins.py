@@ -677,8 +677,9 @@ def write_plugin(driver: str) -> None:
             "Use grok-research to run a cited multi-source research pass on this topic.",
         ]
 
+    (base / "hooks" / "hooks.json").unlink(missing_ok=True)
     write_text(
-        base / "hooks" / "hooks.json",
+        base / "hooks" / "codex-hooks.json",
         json.dumps(
             {
                 "hooks": {
@@ -741,7 +742,7 @@ def write_plugin(driver: str) -> None:
         "license": "MIT",
         "keywords": kw,
         "skills": "./skills/",
-        "hooks": "./hooks/hooks.json",
+        "hooks": "./hooks/codex-hooks.json",
         "interface": {
             "displayName": f"{name} — {short}",
             "shortDescription": short,
